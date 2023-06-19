@@ -1,0 +1,703 @@
+
+! ********************************************************
+! list section
+! ********************************************************
+pure function list_constructor() result(inst)
+    ! ............................ return variable
+    type(list) :: inst
+    inst%style = 0  ! for avoidance of compilation warning unused variable
+    return
+end function
+function list_constructor_sc(x) result(inst)
+    ! ............................ unlimited polymorphic Arguments
+    class(*), intent(in) :: x
+    ! ............................ return variable
+    type(list) :: inst
+
+    allocate(inst%head, source=node(x))
+    inst%tail => inst%head
+    inst%size = 1
+
+    return
+end function
+function list_constructor_a1d(xs) result(inst)
+    ! ............................ unlimited polymorphic Arguments
+    class(*), intent(in) :: xs(:)
+    ! ............................ return variable
+    type(list) :: inst
+    type(node), pointer :: p, p_prev
+    Integer :: i
+
+    p_prev => null()
+
+    do i = 1, size(xs)
+        allocate(p, source=node(xs(i)))
+        if (associated(p_prev)) p_prev%next => p; p%prev => p_prev
+        if (i == 1) inst%head => p
+        if (i == size(xs)) inst%tail => p
+        p_prev => p
+        nullify(p)
+        inst%size = inst%size + 1
+    end do
+
+    return
+end function
+
+elemental subroutine list_destructor(this)
+    implicit none
+    ! ............................ Arguments
+    type(list), intent(inout) :: this
+    ! ............................ main body
+    
+    ! Please note that this destructor will not free the memory for each node, call reset can free
+    this%size = 0
+    this%style = 0
+
+    this%head => null()
+    this%tail => null()
+end subroutine
+
+subroutine list_reset(this)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    ! ............................ local variables
+    type(node), pointer :: p1, p2
+    ! ............................ main body
+
+    this%size = 0
+    this%style = 0
+
+    p1 => this%head
+    do while (associated(p1))
+        p2 => p1%next
+        deallocate(p1)
+        p1 => p2
+    end do
+    this%head => null()
+    this%tail => null()
+end subroutine
+
+! elemental subroutine list_assign_from_list(lhs, rhs) ! unnecessary only if I want to free all memory in destructor
+!     implicit none
+!     ! ............................ Arguments
+!     type(list), intent(inout) :: lhs
+!     type(list), intent(in) :: rhs
+!     ! ............................ local variable
+
+
+!     ! ............................ main body
+!     call lhs%reset
+!     ... ...
+! end subroutine
+
+subroutine list_print(this)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(in) :: this
+    ! ............................ local variables
+    type(node), pointer :: p
+    ! ............................ main body
+    p => this%head
+    
+    do while (associated(p))
+        call p%print
+        p => p%next
+    end do
+
+end subroutine
+
+function list_getf_node(this, pos) result (rst_node)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(in) :: this
+    integer, intent(in) :: pos
+    ! ............................ return variables
+    type(node) :: rst_node
+
+    call this%get(pos, rst_node)
+
+end function list_getf_node
+
+
+subroutine list_get_node(this, pos, inode, stat, errmsg)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(in) :: this
+    integer, intent(in) :: pos
+    type(node), intent(out) :: inode
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+    ! ............................ local variables
+    integer :: istat, i
+    type(node), pointer :: p
+
+    ! ............................ main body
+    if (pos .gt. this%size) then
+        istat = 1
+    elseif (pos .lt. 1) then
+        istat = 1
+    else
+        p => this%head
+        Do i = 1, pos - 1
+            p => p%next
+        End Do
+        inode = p
+        istat = 0
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case (istat)
+                case (0)
+                    errmsg = ''
+                case (1)
+                    errmsg = 'node not found (pos exceeds list bound)'
+            end select
+        end if
+    elseif (istat .ne. 0) then
+        stop "error in rdee_ds/list/get_node, cannot find node! or set stat/msgerr to get detailed info"
+    end if
+
+end subroutine list_get_node
+
+!#jj2 for type in ['int', 'intA1d', 'float', 'floatA1d', 'double', 'doubleA1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
+subroutine list_get_{{ type }}(this, pos, item, stat, errmsg)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    {{ ftype[type] }}, {{ 'allocatable, ' if type.endswith('A1d') }}Intent(out) :: item{{ func_get_rank(type) }}
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+
+    Type(node) :: nodeT
+    integer    :: istat
+
+    istat = 0
+
+    call this%get(pos, nodeT, stat=istat)
+    if (istat .ne. 0) then
+        stat = 4
+    else
+        call nodeT%get(item, stat=istat)
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case(istat)
+                case (0)
+                    errmsg = ''  
+                case (1)
+                    errmsg = 'unmatched data type' ! ' for jj2 vscode view
+                case (2)
+                    errmsg = 'unknown data type'  ! ' for jj2 vscode view
+                case (3)
+                    errmsg = 'not allocated item'
+                case  (4)
+                    errmsg = 'invalid position'
+            end select
+        end if
+    elseif (istat .ne. 0) then
+        stop 'Error in rdee_ds/list, cannot get item from list, or set stat & errmsg to get more detailed info'
+    end if
+
+    Return
+end subroutine
+!#jj2 endfor
+
+
+subroutine list_append(this, item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    class(*), Intent(in) :: item
+
+    ! ................... main body
+    if (this%size == 0) then
+        allocate(this%head, source=node(item))
+        this%tail => this%head
+    else
+        allocate(this%tail%next, source=node(item))
+        this%tail%next%prev => this%tail
+        this%tail => this%tail%next
+    end if
+    this%size = this%size + 1
+end subroutine
+
+subroutine list_append_a1d(this, item1d)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    class(*), Intent(in) :: item1d(:)
+
+    ! ................... main body
+    if (this%size == 0) then
+        allocate(this%head, source=node(item1d))
+        this%tail => this%head
+    else
+        allocate(this%tail%next, source=node(item1d))
+        this%tail%next%prev => this%tail
+        this%tail => this%tail%next
+    end if
+    this%size = this%size + 1
+
+end subroutine
+
+Subroutine list_insert(this, pos, item, stat, errmsg)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    class(*), Intent(in) :: item
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+
+    Type(node), Pointer :: p0, p
+    Integer :: i, istat
+
+    p0 => null()
+
+    if (pos .gt. this%size+1 .or. pos .lt. 1) then
+        istat = -1
+    else
+        istat = 0
+        allocate(p0, source=node(item))
+        if (pos .eq. 1) then
+            p0%next => this%head
+            this%head%prev => p0
+            this%head => p0
+        elseif (pos .eq. this%size + 1) then
+            call this%append(item)
+        else 
+            p => this%head
+            Do i = 1, pos - 1
+                p => p%next
+            End Do
+            p%prev%next => p0
+            p0%next => p
+            p0%prev => p%prev
+            p%prev => p0
+        end if
+        this%size = this%size + 1
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case(istat)
+                case (0)
+                    errmsg = ''
+                case (-1)
+                    errmsg = 'Error in rdee_ds/list/insert, invalid position'
+            end select
+        end if
+    elseif (istat .ne. 0) then
+        stop 'Error in rdee_ds/list/insert, invalid position'
+    end if
+    
+
+    Return
+
+End Subroutine
+
+
+Subroutine list_insert_a1d(this, pos, item, stat, errmsg)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    class(*), Intent(in) :: item(:)
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+
+    Type(node), Pointer :: p0, p
+    Integer :: i, istat
+
+    p0 => null()
+
+    if (pos .gt. this%size+1 .or. pos .lt. 1) then
+        istat = -1
+    else
+        istat = 0
+        allocate(p0, source=node(item))
+        if (pos .eq. 1) then
+            p0%next => this%head
+            this%head%prev => p0
+            this%head => p0
+        elseif (pos .eq. this%size + 1) then
+            call this%append(item)
+        else 
+            p => this%head
+            Do i = 1, pos - 1
+                p => p%next
+            End Do
+            p%prev%next => p0
+            p0%next => p
+            p0%prev => p%prev
+            p%prev => p0
+        end if
+        this%size = this%size + 1
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case(istat)
+                case (0)
+                    errmsg = ''
+                case (-1)
+                    errmsg = 'Error in rdee_ds/list/insert, invalid position'
+            end select
+        end if
+    elseif (istat .ne. 0) then
+        stop 'Error in rdee_ds/list/insert, invalid position'
+    end if
+    
+
+    Return
+
+End Subroutine
+
+Subroutine list_set(this, pos, item, stat, errmsg)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    integer, intent(in) :: pos
+    class(*), intent(in) :: item
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+    ! ............................ local variables
+    type(node), pointer :: p
+    integer :: i, istat
+
+    ! ............................ main body
+    istat = 0
+    if (pos .gt. this%size .or. pos .lt. 1) then
+        istat = 1  ! invalid position
+    else
+        p => this%head
+        do i = 1, pos - 1
+            p => p%next
+        end do
+
+        call p%set(item)  ! no error handling now
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case (istat)
+                case (0)
+                    errmsg = ''
+                case (1)
+                    errmsg = 'Error in rdee_ds/list/set, invalid position'
+            end select
+        end if
+
+    elseif (istat .eq. 1) then
+        stop 'Error in rdee_ds/list/set, invalid position'
+    end if
+
+End Subroutine
+
+Subroutine list_set_a1d(this, pos, item, stat, errmsg)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    integer, intent(in) :: pos
+    class(*), intent(in) :: item(:)
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+    ! ............................ local variables
+    type(node), pointer :: p
+    integer :: i, istat
+
+    ! ............................ main body
+    istat = 0
+    if (pos .gt. this%size .or. pos .lt. 1) then
+        istat = 1  ! invalid position
+    else
+        p => this%head
+        do i = 1, pos - 1
+            p => p%next
+        end do
+
+        call p%set(item)  ! no error handling now
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case (istat)
+                case (0)
+                    errmsg = ''
+                case (1)
+                    errmsg = 'Error in rdee_ds/list/set, invalid position'
+            end select
+        end if
+
+    elseif (istat .eq. 1) then
+        stop 'Error in rdee_ds/list/set, invalid position'
+    end if
+
+End Subroutine list_set_a1d
+
+Subroutine list_delete_by_value(this, val) ! , stat, errmsg)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    class(*), intent(in) :: val
+    ! integer, intent(out), optional :: stat
+    ! character(*), intent(out), optional :: errmsg
+    ! ............................ local variables
+    type(node), pointer :: p, pNext
+    type(node) :: nodeT
+    integer :: i, istat, S
+
+    ! ............................ main body
+    istat = 0
+    S = this%size
+    i = 1
+    nodeT = node(val)
+    p => this%head
+
+    do while (associated(p))
+        pNext => p%next
+        if (nodeT == p) then
+            if (associated(p%prev)) then
+                p%prev%next => p%next
+            end if
+            if (associated(p%next)) then
+                p%next%prev = p%prev
+            end if
+            if (i .eq. 1) this%head => pNext
+            if (i .eq. S) this%tail => p%prev
+            deallocate(p)
+            this%size = this%size - 1
+        end if
+        i = i + 1
+        p => pNext
+    end do
+
+End Subroutine
+
+Subroutine list_delete_by_value_a1d(this, val) ! , stat, errmsg)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    class(*), intent(in) :: val(:)
+    ! integer, intent(out), optional :: stat
+    ! character(*), intent(out), optional :: errmsg
+    ! ............................ local variables
+    type(node), pointer :: p, pNext
+    type(node) :: nodeT
+    integer :: i, istat, S
+
+    ! ............................ main body
+    istat = 0
+    S = this%size
+    i = 1
+    nodeT = node(val)
+    p => this%head
+
+    do while (associated(p))
+        pNext => p%next
+        if (nodeT == p) then
+            if (associated(p%prev)) then
+                p%prev%next => p%next
+            end if
+            if (associated(p%next)) then
+                p%next%prev = p%prev
+            end if
+            if (i .eq. 1) this%head => pNext
+            if (i .eq. S) this%tail => p%prev
+            deallocate(p)
+            this%size = this%size - 1
+        end if
+        i = i + 1
+        p => pNext
+    end do
+
+End Subroutine list_delete_by_value_a1d
+
+
+Subroutine list_delete_by_key(this, key) ! , stat, errmsg)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    class(*), intent(in) :: key
+    ! integer, intent(out), optional :: stat
+    ! character(*), intent(out), optional :: errmsg
+    ! ............................ local variables
+    type(node), pointer :: p, pNext
+    type(node) :: nodeT
+    integer :: i, istat, S
+
+    ! ............................ main body
+    istat = 0
+    S = this%size
+    i = 1
+    p => this%head
+
+    do while (associated(p))
+        pNext => p%next
+        if (p%hasKey(key)) then
+            if (associated(p%prev)) then
+                p%prev%next => p%next
+            end if
+            if (associated(p%next)) then
+                p%next%prev = p%prev
+            end if
+            if (i .eq. 1) this%head => pNext
+            if (i .eq. S) this%tail => p%prev
+            deallocate(p)
+            this%size = this%size - 1
+            return
+        end if
+        i = i + 1
+        p => pNext
+    end do
+
+End Subroutine
+
+Subroutine list_delete_by_pos(this, pos, pop_node, stat, errmsg)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    integer, intent(in) :: pos
+    type(node), intent(out), optional :: pop_node
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+    ! ............................ local variables
+    type(node), pointer :: p
+    integer :: i, istat
+    
+    ! ............................ main body
+    istat = 0
+    p => this%head
+
+    if (pos .gt. this%size .or. pos .lt. 1) then
+        istat = 1  ! invalid position
+    else
+        do i = 1, pos - 1
+            p => p%next
+        end do
+        if (associated(p%prev)) p%prev%next => p%next
+        if (associated(p%next)) p%next%prev => p%prev
+        if (present(pop_node)) then
+            pop_node = p
+        end if
+        if (pos .eq. 1) this%head => p%next
+        if (pos .eq. this%size) this%tail => p%prev
+        deallocate(p)
+        this%size = this%size - 1
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case (istat)
+                case (0)
+                    errmsg = ''
+                case (1)
+                    errmsg = 'Error in rdee_ds/list/pop, invalid position'
+            end select
+        end if
+    elseif (istat .eq. 1) then
+        stop 'Error in rdee_ds/list/pop, invalid position'
+    end if
+
+End Subroutine
+
+Function list_index(this, val) result(rst_ind)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(in) :: this
+    class(*), intent(in) :: val
+    ! ............................ return variable
+    integer :: rst_ind
+    integer :: i
+    type(node), pointer :: p
+    type(node) :: nodeT
+
+    ! ............................ main body
+    p => this%head
+    nodeT = node(val)
+    do i = 1, this%size
+        if (nodeT == p) then
+            rst_ind = i
+            return
+        end if
+        p => p%next
+    end do
+
+    rst_ind = -1
+
+End Function
+
+Function list_index_a1d(this, val) result(rst_ind)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(in) :: this
+    class(*), intent(in) :: val(:)
+    ! ............................ return variable
+    integer :: rst_ind
+    integer :: i
+    type(node), pointer :: p
+    type(node) :: nodeT
+
+    ! ............................ main body
+    p => this%head
+    nodeT = node(val)
+    do i = 1, this%size
+        if (nodeT == p) then
+            rst_ind = i
+            return
+        end if
+        p => p%next
+    end do
+
+    rst_ind = -1
+
+End Function
+
+Function list_keys(this) result(L)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(in) :: this
+    ! ............................ return variables
+    type(list) :: L
+    integer :: i
+    type(node), pointer :: p
+
+    ! ............................ main body
+    if (this%size .eq. 0) return
+
+    p => this%head
+    do i = 1, this%size
+        if (allocated(p%key)) then
+            call L%append(p%key)
+        end if
+        p => p%next
+    end do
+
+End Function
+
+Subroutine list_extend(this, L)
+    implicit none
+    ! .............................. Arguments
+    class(list), intent(inout) :: this
+    type(list), intent(in) :: L
+    ! .............................. local variables
+    type(node), pointer :: p
+
+    ! .............................. main body
+    p => L%head
+    do while (associated(p))
+        call this%append(p)
+        p => p%next
+    end do
+End Subroutine list_extend

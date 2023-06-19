@@ -1,0 +1,279 @@
+
+impure elemental subroutine dict_destructor(this)
+    implicit none
+    ! ............................ Argument
+    type(dict), intent(inout) :: this
+
+    if (allocated(this%lists)) deallocate(this%lists) 
+    this%size = 0
+    this%hashFunc => null()
+end subroutine
+
+function dict_constructor(hash, L) result(inst)
+    implicit none
+    ! ............................ Argument
+    procedure(hash_A2i), optional :: hash
+    integer, intent(in), optional :: L
+    ! ............................ Return variables
+    type(dict) :: inst
+    ! ............................ Local variables
+
+    if (present(hash)) then
+        inst%hashFunc => hash
+    else
+        inst%hashFunc => hash_mod_is
+    end if
+
+    if (present(L)) then
+        inst%size = L
+    else
+        inst%size = 31
+    end if
+    allocate(inst%lists(inst%size))
+
+end function
+
+subroutine dict_reset(this)
+    implicit none
+    ! ............................ Arguments
+    class(dict), intent(inout) :: this
+    ! ............................ Local variables
+    integer :: i
+
+    ! ............................ main body
+    if (allocated(this%lists)) then
+        do i = 1, this%size
+            call this%lists(i)%reset
+        end do
+        deallocate(this%lists)
+    end if
+
+    this%size = 0
+    this%hashFunc => null()
+end subroutine
+
+
+! *********************************************************
+! 
+! *********************************************************
+function dict_hash(this, key) result(rst_idx)
+    implicit none
+    ! ............................ Arguments
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: key
+    ! ............................ result variables
+    integer :: rst_idx
+
+    ! ............................ main body
+    rst_idx = this%hashFunc(key, this%size)
+
+end function
+
+subroutine dict_print(this, key)
+    implicit none
+    ! ............................ Arguments
+    class(dict), intent(in) :: this
+    class(*), intent(in), optional :: key
+    ! ............................ local variable
+    type(node) :: nodeT, n2
+    type(list) :: L
+    integer :: i
+    ! ............................ main body
+
+    L = this%keys()
+
+    if (present(key)) then
+        call this%get(key, nodeT)
+        call nodeT%print
+    else
+        do i = 1, L%size
+            n2 = L%get_f(i)
+            call this%get(n2%item, nodeT)
+            call nodeT%print
+        end do
+    end if
+end subroutine dict_print
+
+
+function dict_keys(this) result(rstL)
+    implicit none
+    ! ............................  Arguments
+    class(dict), intent(in) :: this
+    ! ............................  local variables
+    type(list) :: rstL
+    integer :: i
+
+    ! ............................  main body
+    if (this%size .eq. 0) return
+
+    do i = 1, this%size
+        call rstL%extend(this%lists(i)%keys())
+    end do
+end function
+
+subroutine dict_update(this, M)
+    implicit none
+    ! ............................ Arguments
+    class(dict), intent(inout) :: this
+    type(dict), intent(in) :: M
+    ! ............................ main body
+    type(list) :: L
+    type(node) :: N
+    type(node), pointer :: p
+
+    L = M%keys()
+    p => L%head
+    do while (associated(p))
+        ! call p%print
+        call M%get(p%item, N)
+        ! print *, 'cp2'
+        ! CALL N%print
+        call this%set(N)
+        p => p%next
+    end do
+
+end subroutine dict_update
+
+
+
+
+! *********************************************************
+! set & get procedures for dict
+! *********************************************************
+subroutine dict_set_node(this, n)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(inout) :: this
+    type(node), intent(in) :: n
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+
+    ! ............................ main body
+    hashVal = this%hash(n%key)
+
+    listTar = this%lists(hashVal)
+    p => this%lists(hashVal)%head
+    do while (associated(p))
+        if (p%hasKey(n%key)) then
+            call p%set(n)
+            return
+        end if
+        p => p%next
+    end do
+
+    call this%lists(hashVal)%append(n)  ! maybe add a function to implement shallow copy ...
+
+    p => null()
+End Subroutine dict_set_node
+
+subroutine dict_set(this, k, v)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(inout) :: this
+    class(*), intent(in) :: k, v
+
+    call this%set(node(k, v))
+    ! ............................ local variable
+    ! type(node), pointer :: p
+    ! type(list) :: listTar
+    ! integer :: hashVal
+
+    ! ! ............................ main body
+    ! hashVal = this%hash(k)
+
+    ! listTar = this%lists(hashVal)
+    ! p => this%lists(hashVal)%head
+    ! do while (associated(p))
+    !     if (p%hasKey(k)) then
+    !         call p%set(v)
+    !         return
+    !     end if
+    !     p => p%next
+    ! end do
+
+    ! allocate(p, source=node(k, v))
+    ! call this%lists(hashVal)%append(p)  ! maybe add a function to implement shallow copy ...
+
+    ! p => null()
+End Subroutine dict_set
+
+subroutine dict_set_a1d(this, k, v)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(inout) :: this
+    class(*), intent(in) :: k, v(:)
+    ! ............................ local variable
+    call this%set(node(k, v))
+    ! type(node), pointer :: p
+    ! type(list) :: listTar
+    ! integer :: hashVal
+
+    ! ! ............................ main body
+    ! hashVal = this%hash(k)
+
+    ! listTar = this%lists(hashVal)
+    ! p => this%lists(hashVal)%head
+    ! do while (associated(p))
+    !     if (p%hasKey(k)) then
+    !         call p%set(v)
+    !         return
+    !     end if
+    !     p => p%next
+    ! end do
+
+    ! allocate(p, source=node(k, v))
+    ! call this%lists(hashVal)%append(p)  ! maybe add a function to implement shallow copy ...
+
+    ! p => null()
+End Subroutine dict_set_a1d
+
+subroutine dict_get(this, k, v)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    class(*), intent(out) :: v
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    p => listTar%head
+    
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            select type (vp => v)
+                type is (node)
+                    vp = p
+                class default
+                    call p%get(v)
+            end select
+            return
+        end if
+        p => p%next
+    end do
+
+    stop 'Error in rdee_ds/dict/get, cannot find target key'
+End Subroutine
+
+subroutine dict_del(this, k)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(inout) :: this
+    class(*), intent(in) :: k
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+    ! ............................ main body
+    hashVal = this%hash(k)
+
+    listTar = this%lists(hashVal)
+    call listTar%popKey(k)
+End Subroutine
+
+! End Subroutine

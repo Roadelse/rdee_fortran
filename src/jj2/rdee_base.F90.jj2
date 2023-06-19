@@ -1,0 +1,64 @@
+Module rdee_base
+    Implicit none
+
+Contains
+    Subroutine assert(bval, msg)
+        Implicit none
+        Logical, Intent(in) :: bval
+        Character(*), Intent(in) :: msg
+        
+        If (.not. bval) then
+            write(*,*) msg
+            Stop 999
+        Endif
+
+    End Subroutine assert
+
+    elemental integer function eq_um(x, y) result(rst)
+        implicit none
+        ! ··················· Arguments
+        class(*), intent(in) :: x, y
+
+        select type(xp => x)
+            !#jj2 for type in ['integer(kind=4)', 'integer(kind=8)', 'real(kind=4)', 'real(kind=8)', 'logical', 'character(*)']:
+            !#jj2 set eq_sym = '.eqv.' if type.startswith('logical') else '.eq.'
+            type is ({{ type }})
+                select type(yp => y)
+                    type is ({{ type }})
+                        rst = 0
+                        if (xp {{ eq_sym }} yp) rst = 1
+                    class default
+                        rst = -1
+                end select
+            !#jj2 endfor
+            class default
+                rst = -2
+        end select
+        return
+    end function
+
+    
+    integer function eq_1d_um(x, y) result(rst)
+        implicit none
+        ! ··················· Arguments
+        class(*), intent(in) :: x(:), y(:)
+
+        select type(xp => x)
+            !#jj2 for type in ['integer(kind=4)', 'integer(kind=8)', 'real(kind=4)', 'real(kind=8)', 'logical', 'character(*)']:
+            !#jj2 set eq_sym = '.eqv.' if type.startswith('logical') else '.eq.'
+            type is ({{ type }})
+                select type(yp => y)
+                    type is ({{ type }})
+                        rst = 0
+                        if (all(xp {{ eq_sym }} yp)) rst = 1
+                    class default
+                        rst = -1
+                end select
+            !#jj2 endfor
+            class default
+                rst = -2
+        end select
+        return
+    end function
+
+End Module
