@@ -23,13 +23,15 @@ Module rdee_ds
         Procedure :: print => node_print
       
         procedure ::node_get_item
-        Procedure :: node_get_item1d_int
+        Procedure :: node_get_item1d_int4
+        Procedure :: node_get_item1d_int8
         Procedure :: node_get_item1d_float
         Procedure :: node_get_item1d_double
         Procedure :: node_get_item1d_logical
         Procedure :: node_get_item1d_string
         Generic :: get => node_get_item, &
-            node_get_item1d_int, &
+            node_get_item1d_int4, &
+            node_get_item1d_int8, &
             node_get_item1d_float, &
             node_get_item1d_double, &
             node_get_item1d_logical, &
@@ -53,7 +55,9 @@ Module rdee_ds
 
         Procedure :: list_get_node
         Procedure :: list_get_int
+        Procedure :: list_get_int8
         Procedure :: list_get_intA1d
+        Procedure :: list_get_int8A1d
         Procedure :: list_get_float
         Procedure :: list_get_floatA1d
         Procedure :: list_get_double
@@ -65,7 +69,9 @@ Module rdee_ds
         Generic :: get => &
             list_get_node,&
             list_get_int,&
+            list_get_int8,&
             list_get_intA1d,&
+            list_get_int8A1d,&
             list_get_float,&
             list_get_floatA1d,&
             list_get_double,&
@@ -93,6 +99,20 @@ Module rdee_ds
 
         Procedure :: keys => list_keys
         Procedure :: extend => list_extend
+
+        Procedure :: list_toArray_int4
+        Procedure :: list_toArray_int8
+        Procedure :: list_toArray_float
+        Procedure :: list_toArray_double
+        Procedure :: list_toArray_logical
+        Procedure :: list_toArray_string
+        Generic :: toArray => &
+            list_toArray_int4,&
+            list_toArray_int8,&
+            list_toArray_float,&
+            list_toArray_double,&
+            list_toArray_logical,&
+            list_toArray_string
     End Type
 
     Type dict

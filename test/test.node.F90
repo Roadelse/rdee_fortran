@@ -73,7 +73,7 @@ print *, 'node test C2. should be: 9 9 9 ; 9 9 9    -2'
 n1 = node('pi', [3,1,4])
 call n1%set([9,9,9])
 call n1%print
-call n1%node_get_item1d_int(iaa1)
+call n1%node_get_item1d_int4(iaa1)
 print *, iaa1, n1%style
 call assert(all(iaa1 == [9,9,9]), 'Error in rdee_ds/node test C2')
 deallocate(iaa1)

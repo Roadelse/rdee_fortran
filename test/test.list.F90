@@ -6,9 +6,12 @@ type(list) :: L1, L2
 type(node) :: n1, n2
 integer :: i,j,k
 integer, allocatable :: iaa1(:)
+integer :: ia1(3)
+
 real(kind=4) :: r1
 character(5) :: s5
 character(80) :: s80
+character(80), allocatable :: saa1(:)
 
 print *, '--------- (A) now test constructor & get for v ----------'
 print *, 'list test A1. should be: item = 1; 1'
@@ -20,11 +23,13 @@ call assert(i .eq. 1, 'Error in rdee_ds/list test A1')
 print *, ''
 
 
-print *, 'list test A2. should be : 2'
+print *, 'list test A2. should be : 2, 3'
 L1 = list([1,2,3])
 call L1%get(2, i)
-print *, i
+call L1%get(3, ia1(2))
+print *, i, ia1(2)
 call assert(i .eq. 2, 'Error in rdee_ds/list test A2')
+call assert(ia1(2) .eq. 3, 'Error in rdee_ds/lit test A2')
 print *, ''
 
 print *, '--------- (B) now test append & insert ----------'
@@ -40,6 +45,7 @@ call L1%get(3, iaa1)
 print *, s5
 print *, iaa1
 call assert(all(iaa1 == [1,2,3]), 'Error in rdee_ds/list test B1')
+deallocate(iaa1)
 print *, ''
 
 print *, '--------- (C) now test pop/del/index ----------'
@@ -55,6 +61,18 @@ call L1%head%print
 call L1%tail%print
 print *, 'L1%index([1.2, 2.3]), should be 4: ', L1%index([1.2, 2.3])
 call assert(L1%index([1.2, 2.3]) .eq. 4, 'Error in rdee_ds/list test C1')
+
+print *, '--------- (D) now test toArray ----------'
+L1 = list([1,2,3,4])
+call L1%toArray(iaa1)
+print *, iaa1
+call assert(all(iaa1 .eq. [1,2,3,4]), 'Error in rdee_ds/list test D1')
+
+L1 = list()
+call L1%append('hello')
+call L1%append('nowwhat')
+call L1%toArray(saa1)
+print *, saa1
 
 end program
 

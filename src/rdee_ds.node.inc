@@ -260,6 +260,13 @@ subroutine node_get_item(this, item, stat, errmsg)
                     class default
                         istat = 1  ! unmatched data type
                 end select
+            type is (integer(kind=8))
+                select type (v2 => this%item)
+                    type is (integer(kind=8))
+                        v = v2
+                    class default
+                        istat = 1  ! unmatched data type
+                end select
             type is (real(kind=4))
                 select type (v2 => this%item)
                     type is (real(kind=4))
@@ -345,7 +352,7 @@ end subroutine node_get_item
 ! end subroutine
 
 
-subroutine node_get_item1d_int(this, item, stat, errmsg)
+subroutine node_get_item1d_int4(this, item, stat, errmsg)
     implicit none
 
     class(node), intent(in) :: this
@@ -374,11 +381,47 @@ subroutine node_get_item1d_int(this, item, stat, errmsg)
                 case (0)
                     errmsg = ''
                 case default
-                    errmsg = 'Error in rdee_ds/node/get_item1d_int'
+                    errmsg = 'Error in rdee_ds/node/get_item1d_int4'
             end select        
         end if
     elseif (istat .ne. 0) then
-        stop 'Error in rdee_ds/node/get_item1d_int'
+        stop 'Error in rdee_ds/node/get_item1d_int4'
+    end if
+end subroutine
+subroutine node_get_item1d_int8(this, item, stat, errmsg)
+    implicit none
+
+    class(node), intent(in) :: this
+    integer(kind=8), allocatable, intent(out) :: item(:)
+    integer, intent(out), optional :: stat
+    character(*),intent(out), optional :: errmsg
+
+    integer :: istat
+
+    istat = 0
+    if (allocated(this%item1d)) then
+        select type (v => this%item1d)
+            type is (integer(kind=8))
+                allocate(item, source=v)
+            class default
+                istat = 1  ! unmatched data type
+        end select
+    else
+        istat = 2    ! not allocated item1d
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case (istat)
+                case (0)
+                    errmsg = ''
+                case default
+                    errmsg = 'Error in rdee_ds/node/get_item1d_int8'
+            end select        
+        end if
+    elseif (istat .ne. 0) then
+        stop 'Error in rdee_ds/node/get_item1d_int8'
     end if
 end subroutine
 subroutine node_get_item1d_float(this, item, stat, errmsg)
@@ -623,6 +666,13 @@ subroutine node_getKey(this, key, stat, errmsg)
                     class default
                         istat = 2  
                 end select                  
+            type is (integer(kind=8))
+                select type(k2 => this%key)
+                    type is (integer(kind=8))
+                        k = k2
+                    class default
+                        istat = 2  
+                end select                  
             type is (real(kind=4))
                 select type(k2 => this%key)
                     type is (real(kind=4))
@@ -697,6 +747,13 @@ function node_hasKey(this, key) result(rst_b)
         type is (integer(kind=4))
             select type (k2 => this%key)
                 type is (integer(kind=4))
+                    rst_b = k .eq. k2
+                class default
+                    rst_b = .false.
+            end select
+        type is (integer(kind=8))
+            select type (k2 => this%key)
+                type is (integer(kind=8))
                     rst_b = k .eq. k2
                 class default
                     rst_b = .false.

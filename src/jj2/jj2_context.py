@@ -15,7 +15,10 @@ def get_rank_from_type(x: str):
 ctt = {
     'ftype' : {
         'int' : 'integer(kind=4)',
+        'int4' : 'integer(kind=4)',
+        'int8' : 'integer(kind=8)',
         'intA1d' : 'integer(kind=4)',
+        'int8A1d' : 'integer(kind=8)',
         'intA2d' : 'integer(kind=4)',
         'intA3d' : 'integer(kind=4)',
         'float' : 'real(kind=4)',

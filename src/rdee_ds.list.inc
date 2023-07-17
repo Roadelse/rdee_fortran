@@ -205,12 +205,98 @@ subroutine list_get_int(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+subroutine list_get_int8(this, pos, item, stat, errmsg)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    integer(kind=8), Intent(out) :: item
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+
+    Type(node) :: nodeT
+    integer    :: istat
+
+    istat = 0
+
+    call this%get(pos, nodeT, stat=istat)
+    if (istat .ne. 0) then
+        stat = 4
+    else
+        call nodeT%get(item, stat=istat)
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case(istat)
+                case (0)
+                    errmsg = ''  
+                case (1)
+                    errmsg = 'unmatched data type' ! ' for jj2 vscode view
+                case (2)
+                    errmsg = 'unknown data type'  ! ' for jj2 vscode view
+                case (3)
+                    errmsg = 'not allocated item'
+                case  (4)
+                    errmsg = 'invalid position'
+            end select
+        end if
+    elseif (istat .ne. 0) then
+        stop 'Error in rdee_ds/list, cannot get item from list, or set stat & errmsg to get more detailed info'
+    end if
+
+    Return
+end subroutine
 subroutine list_get_intA1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
     Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
     integer(kind=4), allocatable, Intent(out) :: item(:)
+    integer, intent(out), optional :: stat
+    character(*), intent(out), optional :: errmsg
+
+    Type(node) :: nodeT
+    integer    :: istat
+
+    istat = 0
+
+    call this%get(pos, nodeT, stat=istat)
+    if (istat .ne. 0) then
+        stat = 4
+    else
+        call nodeT%get(item, stat=istat)
+    end if
+
+    if (present(stat)) then
+        stat = istat
+        if (present(errmsg)) then
+            select case(istat)
+                case (0)
+                    errmsg = ''  
+                case (1)
+                    errmsg = 'unmatched data type' ! ' for jj2 vscode view
+                case (2)
+                    errmsg = 'unknown data type'  ! ' for jj2 vscode view
+                case (3)
+                    errmsg = 'not allocated item'
+                case  (4)
+                    errmsg = 'invalid position'
+            end select
+        end if
+    elseif (istat .ne. 0) then
+        stop 'Error in rdee_ds/list, cannot get item from list, or set stat & errmsg to get more detailed info'
+    end if
+
+    Return
+end subroutine
+subroutine list_get_int8A1d(this, pos, item, stat, errmsg)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    integer(kind=8), allocatable, Intent(out) :: item(:)
     integer, intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
 
@@ -1084,3 +1170,95 @@ Subroutine list_extend(this, L)
         p => p%next
     end do
 End Subroutine list_extend
+
+
+Subroutine list_toArray_int4(this, arr)
+    implicit none
+    !.................................. Arguments
+    class(list), intent(inout) :: this
+    integer(kind=4), allocatable, intent(inout) :: arr(:)
+    !.................................. local variables
+    integer :: i
+
+    !.................................. Main body
+    allocate(arr(this%size))
+    do i = 1, this%size
+        call this%get(i, arr(i))
+    end do
+
+end subroutine list_toArray_int4
+Subroutine list_toArray_int8(this, arr)
+    implicit none
+    !.................................. Arguments
+    class(list), intent(inout) :: this
+    integer(kind=8), allocatable, intent(inout) :: arr(:)
+    !.................................. local variables
+    integer :: i
+
+    !.................................. Main body
+    allocate(arr(this%size))
+    do i = 1, this%size
+        call this%get(i, arr(i))
+    end do
+
+end subroutine list_toArray_int8
+Subroutine list_toArray_float(this, arr)
+    implicit none
+    !.................................. Arguments
+    class(list), intent(inout) :: this
+    real(kind=4), allocatable, intent(inout) :: arr(:)
+    !.................................. local variables
+    integer :: i
+
+    !.................................. Main body
+    allocate(arr(this%size))
+    do i = 1, this%size
+        call this%get(i, arr(i))
+    end do
+
+end subroutine list_toArray_float
+Subroutine list_toArray_double(this, arr)
+    implicit none
+    !.................................. Arguments
+    class(list), intent(inout) :: this
+    real(kind=8), allocatable, intent(inout) :: arr(:)
+    !.................................. local variables
+    integer :: i
+
+    !.................................. Main body
+    allocate(arr(this%size))
+    do i = 1, this%size
+        call this%get(i, arr(i))
+    end do
+
+end subroutine list_toArray_double
+Subroutine list_toArray_logical(this, arr)
+    implicit none
+    !.................................. Arguments
+    class(list), intent(inout) :: this
+    logical, allocatable, intent(inout) :: arr(:)
+    !.................................. local variables
+    integer :: i
+
+    !.................................. Main body
+    allocate(arr(this%size))
+    do i = 1, this%size
+        call this%get(i, arr(i))
+    end do
+
+end subroutine list_toArray_logical
+Subroutine list_toArray_string(this, arr)
+    implicit none
+    !.................................. Arguments
+    class(list), intent(inout) :: this
+    character(*), allocatable, intent(inout) :: arr(:)
+    !.................................. local variables
+    integer :: i
+
+    !.................................. Main body
+    allocate(arr(this%size))
+    do i = 1, this%size
+        call this%get(i, arr(i))
+    end do
+
+end subroutine list_toArray_string

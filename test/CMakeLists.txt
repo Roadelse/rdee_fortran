@@ -10,10 +10,18 @@ target_link_libraries(test.list
 )
 
 add_executable(test.dict test.dict.F90)
+target_compile_options(test.dict
+    PUBLIC -g)
 target_link_libraries(test.dict
     rdee_fortran
 )
 
+add_executable(test.string test.string.F90)
+target_compile_options(test.string
+    PUBLIC -g)
+target_link_libraries(test.string
+    rdee_fortran
+)
 
 
 add_test(
@@ -27,4 +35,8 @@ add_test(
 add_test(
     NAME test.dict
     COMMAND $<TARGET_FILE:test.dict>
+)
+add_test(
+    NAME test.string
+    COMMAND $<TARGET_FILE:test.string>
 )

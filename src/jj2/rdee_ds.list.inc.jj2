@@ -162,7 +162,7 @@ subroutine list_get_node(this, pos, inode, stat, errmsg)
 
 end subroutine list_get_node
 
-!#jj2 for type in ['int', 'intA1d', 'float', 'floatA1d', 'double', 'doubleA1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
+!#jj2 for type in ['int', 'int8', 'intA1d', 'int8A1d', 'float', 'floatA1d', 'double', 'doubleA1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
 subroutine list_get_{{ type }}(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -701,3 +701,22 @@ Subroutine list_extend(this, L)
         p => p%next
     end do
 End Subroutine list_extend
+
+
+!#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+Subroutine list_toArray_{{ type }}(this, arr)
+    implicit none
+    !.................................. Arguments
+    class(list), intent(inout) :: this
+    {{ ftype[type] }}, allocatable, intent(inout) :: arr(:)
+    !.................................. local variables
+    integer :: i
+
+    !.................................. Main body
+    allocate(arr(this%size))
+    do i = 1, this%size
+        call this%get(i, arr(i))
+    end do
+
+end subroutine list_toArray_{{ type }}
+!#jj2 endfor
