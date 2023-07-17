@@ -121,7 +121,20 @@ Module rdee_ds
         procedure(hash_a2i), pointer, nopass :: hashFunc
       Contains
         final :: dict_destructor
-        Procedure :: get => dict_get
+        Procedure :: dict_get
+        Procedure :: dict_get1d_int4
+        Procedure :: dict_get1d_int8
+        Procedure :: dict_get1d_float
+        Procedure :: dict_get1d_double
+        Procedure :: dict_get1d_logical
+        Procedure :: dict_get1d_string
+        Generic :: get => dict_get, &
+            dict_get1d_int4,&
+            dict_get1d_int8,&
+            dict_get1d_float,&
+            dict_get1d_double,&
+            dict_get1d_logical,&
+            dict_get1d_string
         Procedure :: dict_set, dict_set_a1d, dict_set_node
         Generic :: set => dict_set, dict_set_a1d, dict_set_node
         Procedure :: del => dict_del

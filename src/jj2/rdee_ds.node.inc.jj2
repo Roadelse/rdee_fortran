@@ -240,7 +240,15 @@ subroutine node_get_item(this, item, stat, errmsg)
             end select        
         end if
     elseif (istat .ne. 0) then
-        stop 'Error in rdee_ds/node/get'
+        select case (istat)
+            case(1)
+                print *,'Error in rdee_ds/node/get, unmatched data type'
+            case(2)
+                print *,'Error in rdee_ds/node/get, unknown arg-item data type'
+            case(3)
+                print *,'Error in rdee_ds/node/get, not allocated'
+        end select
+        stop 3
     end if
 end subroutine node_get_item
 

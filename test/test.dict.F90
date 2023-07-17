@@ -8,7 +8,7 @@ program main
     type(list) :: L1
 
     real(kind=8) :: d1
-    integer(kind=4),allocatable :: iaa1
+    integer(kind=4),allocatable :: iaa1(:)
 
     print *, '--------- (A) now test constructor & hash ----------'
     map1 = dict()
@@ -51,7 +51,7 @@ program main
     call map1%get(7, d1)
     call map1%get(1, iaa1)
     call assert(d1 .eq. 9.9d0, 'Error in rdee_dict test C1')
-    call assert(all(iaa1 .eq. [4,5,6,7]), 'Error in rdee_dict test C1')
+    call assert(all(iaa1 .eq. [2,3,4]), 'Error in rdee_dict test C1')
 
 
 end program

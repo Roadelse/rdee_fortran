@@ -92,7 +92,14 @@ Module rdee_ds
         procedure(hash_a2i), pointer, nopass :: hashFunc
       Contains
         final :: dict_destructor
-        Procedure :: get => dict_get
+        Procedure :: dict_get
+        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        Procedure :: dict_get1d_{{ type }}
+        !#jj2 endfor
+        Generic :: get => dict_get, &
+        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+            dict_get1d_{{ type }}{{ ',&' if not loop.last }}
+        !#jj2 endfor
         Procedure :: dict_set, dict_set_a1d, dict_set_node
         Generic :: set => dict_set, dict_set_a1d, dict_set_node
         Procedure :: del => dict_del

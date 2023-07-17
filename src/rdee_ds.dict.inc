@@ -260,6 +260,170 @@ subroutine dict_get(this, k, v)
     stop 'Error in rdee_ds/dict/get, cannot find target key'
 End Subroutine
 
+
+
+Subroutine dict_get1d_int4(this, k, v1d)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    integer(kind=4), allocatable, intent(out) :: v1d(:)
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    p => listTar%head
+
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            call p%get(v1d)
+            return
+        end if
+        p => p%next
+    end do
+
+    stop 'Error in rdee_ds/dict/get, cannot find target key'
+
+End Subroutine dict_get1d_int4
+Subroutine dict_get1d_int8(this, k, v1d)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    integer(kind=8), allocatable, intent(out) :: v1d(:)
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    p => listTar%head
+
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            call p%get(v1d)
+            return
+        end if
+        p => p%next
+    end do
+
+    stop 'Error in rdee_ds/dict/get, cannot find target key'
+
+End Subroutine dict_get1d_int8
+Subroutine dict_get1d_float(this, k, v1d)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    real(kind=4), allocatable, intent(out) :: v1d(:)
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    p => listTar%head
+
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            call p%get(v1d)
+            return
+        end if
+        p => p%next
+    end do
+
+    stop 'Error in rdee_ds/dict/get, cannot find target key'
+
+End Subroutine dict_get1d_float
+Subroutine dict_get1d_double(this, k, v1d)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    real(kind=8), allocatable, intent(out) :: v1d(:)
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    p => listTar%head
+
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            call p%get(v1d)
+            return
+        end if
+        p => p%next
+    end do
+
+    stop 'Error in rdee_ds/dict/get, cannot find target key'
+
+End Subroutine dict_get1d_double
+Subroutine dict_get1d_logical(this, k, v1d)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    logical, allocatable, intent(out) :: v1d(:)
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    p => listTar%head
+
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            call p%get(v1d)
+            return
+        end if
+        p => p%next
+    end do
+
+    stop 'Error in rdee_ds/dict/get, cannot find target key'
+
+End Subroutine dict_get1d_logical
+Subroutine dict_get1d_string(this, k, v1d)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    character(*), allocatable, intent(out) :: v1d(:)
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    p => listTar%head
+
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            call p%get(v1d)
+            return
+        end if
+        p => p%next
+    end do
+
+    stop 'Error in rdee_ds/dict/get, cannot find target key'
+
+End Subroutine dict_get1d_string
 subroutine dict_del(this, k)
     implicit none
     ! ............................ Argument
