@@ -65,12 +65,15 @@ Contains
 
         call remove_val(sa_1d_1, 'hello', saa_1d_1, -1)
         print *, saa_1d_1
-        call assert(size(saa_1d_1) .eq. 1 .and. saa_1d_1(1) .eq. 'you', 'Error in array.remove_val_string')
+        print *, size(saa_1d_1)
+        print *, saa_1d_1
+        print *, lbound(saa_1d_1)
+        call assert(size(saa_1d_1) .eq. 1 .and. saa_1d_1(1) .eq. 'you', 'Error in array.remove_val_string, turn 1')
         deallocate(saa_1d_1) 
 
         call remove_val(sa_1d_1, 'hello', saa_1d_1, rev_=1)
         print *, saa_1d_1
-        call assert(size(saa_1d_1) .eq. 2 .and. saa_1d_1(2) .eq. 'you', 'Error in array.remove_val_string')
+        call assert(size(saa_1d_1) .eq. 2 .and. saa_1d_1(2) .eq. 'you', 'Error in array.remove_val_string, turn 2')
         deallocate(saa_1d_1) 
     End Subroutine
 

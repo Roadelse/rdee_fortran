@@ -78,7 +78,6 @@ Contains
         rev = 0
         if (present(rev_)) rev = rev_
 
-
         if (rev .eq. 0) then
             stride = 1
             st = 1
@@ -103,7 +102,6 @@ Contains
             end if
         end do  
 
-
         ! if (L%size .eq. 0) return
         if (j .eq. 0) return
 
@@ -111,7 +109,7 @@ Contains
         if (rev .ne. 0) idx_holder(1:j) = idx_holder(j:1:-1)
 
         ! call L%toArray(idxs)
-        allocate(rst, source=arr(idx_holder(1:j)))
+        allocate(rst(j), source=arr(idx_holder(1:j)))
 
         return
     End Subroutine remove_val_int4
@@ -138,7 +136,6 @@ Contains
         rev = 0
         if (present(rev_)) rev = rev_
 
-
         if (rev .eq. 0) then
             stride = 1
             st = 1
@@ -163,7 +160,6 @@ Contains
             end if
         end do  
 
-
         ! if (L%size .eq. 0) return
         if (j .eq. 0) return
 
@@ -171,7 +167,7 @@ Contains
         if (rev .ne. 0) idx_holder(1:j) = idx_holder(j:1:-1)
 
         ! call L%toArray(idxs)
-        allocate(rst, source=arr(idx_holder(1:j)))
+        allocate(rst(j), source=arr(idx_holder(1:j)))
 
         return
     End Subroutine remove_val_int8
@@ -198,7 +194,6 @@ Contains
         rev = 0
         if (present(rev_)) rev = rev_
 
-
         if (rev .eq. 0) then
             stride = 1
             st = 1
@@ -223,7 +218,6 @@ Contains
             end if
         end do  
 
-
         ! if (L%size .eq. 0) return
         if (j .eq. 0) return
 
@@ -231,7 +225,7 @@ Contains
         if (rev .ne. 0) idx_holder(1:j) = idx_holder(j:1:-1)
 
         ! call L%toArray(idxs)
-        allocate(rst, source=arr(idx_holder(1:j)))
+        allocate(rst(j), source=arr(idx_holder(1:j)))
 
         return
     End Subroutine remove_val_float
@@ -258,7 +252,6 @@ Contains
         rev = 0
         if (present(rev_)) rev = rev_
 
-
         if (rev .eq. 0) then
             stride = 1
             st = 1
@@ -283,7 +276,6 @@ Contains
             end if
         end do  
 
-
         ! if (L%size .eq. 0) return
         if (j .eq. 0) return
 
@@ -291,7 +283,7 @@ Contains
         if (rev .ne. 0) idx_holder(1:j) = idx_holder(j:1:-1)
 
         ! call L%toArray(idxs)
-        allocate(rst, source=arr(idx_holder(1:j)))
+        allocate(rst(j), source=arr(idx_holder(1:j)))
 
         return
     End Subroutine remove_val_double
@@ -318,7 +310,6 @@ Contains
         rev = 0
         if (present(rev_)) rev = rev_
 
-
         if (rev .eq. 0) then
             stride = 1
             st = 1
@@ -343,7 +334,6 @@ Contains
             end if
         end do  
 
-
         ! if (L%size .eq. 0) return
         if (j .eq. 0) return
 
@@ -351,7 +341,7 @@ Contains
         if (rev .ne. 0) idx_holder(1:j) = idx_holder(j:1:-1)
 
         ! call L%toArray(idxs)
-        allocate(rst, source=arr(idx_holder(1:j)))
+        allocate(rst(j), source=arr(idx_holder(1:j)))
 
         return
     End Subroutine remove_val_logical
@@ -378,7 +368,6 @@ Contains
         rev = 0
         if (present(rev_)) rev = rev_
 
-
         if (rev .eq. 0) then
             stride = 1
             st = 1
@@ -403,7 +392,6 @@ Contains
             end if
         end do  
 
-
         ! if (L%size .eq. 0) return
         if (j .eq. 0) return
 
@@ -411,7 +399,7 @@ Contains
         if (rev .ne. 0) idx_holder(1:j) = idx_holder(j:1:-1)
 
         ! call L%toArray(idxs)
-        allocate(rst, source=arr(idx_holder(1:j)))
+        allocate(rst(j), source=arr(idx_holder(1:j)))
 
         return
     End Subroutine remove_val_string
