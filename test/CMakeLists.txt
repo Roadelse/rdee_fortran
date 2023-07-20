@@ -23,6 +23,12 @@ target_link_libraries(test.string
     rdee_fortran
 )
 
+add_executable(test.array test.array.F90)
+target_compile_options(test.array
+    PUBLIC -g)
+target_link_libraries(test.array
+    rdee_fortran
+)
 
 add_test(
     NAME test.node
@@ -39,4 +45,8 @@ add_test(
 add_test(
     NAME test.string
     COMMAND $<TARGET_FILE:test.string>
+)
+add_test(
+    NAME test.array
+    COMMAND $<TARGET_FILE:test.array>
 )
