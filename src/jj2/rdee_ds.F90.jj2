@@ -84,6 +84,8 @@ Module rdee_ds
             list_toArray_{{ type }}{{ ',&' if not loop.last }}
         !#jj2 endfor
 
+        Procedure :: reverse => list_reverse
+
     End Type
 
     Type dict

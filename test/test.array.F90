@@ -3,8 +3,9 @@ Program main
     implicit none
 
 
-    call test_ispan
-    call test_fspan
+    ! call test_ispan
+    ! call test_fspan
+    call test_remove_val
 
 
 Contains
@@ -26,5 +27,52 @@ Contains
         print *, 'succeed in test for fspan'
 
     End Subroutine
+
+    Subroutine test_remove_val()
+        implicit none
+
+        integer :: ia_1d_1(9)
+        integer, allocatable :: iaa_1d_1(:)
+
+        character(80) :: sa_1d_1(3)
+        character(80), allocatable :: saa_1d_1(:)
+
+        ia_1d_1 = [1,2,3,4,5,6,1,2,3]
+        sa_1d_1(1) = 'hello'
+        sa_1d_1(2) = 'you'
+        sa_1d_1(3) = 'hello'
+
+        call remove_val(ia_1d_1, 1, iaa_1d_1)
+        print *, iaa_1d_1
+        call assert(all(iaa_1d_1 .eq. [2,3,4,5,6,1,2,3]), 'Error in array.remove_val')
+        deallocate(iaa_1d_1)
+
+        call remove_val(ia_1d_1, 1, iaa_1d_1, 2)
+        print *, iaa_1d_1
+        call assert(all(iaa_1d_1 .eq. [2,3,4,5,6,2,3]), 'Error in array.remove_val')
+        deallocate(iaa_1d_1)
+
+        call remove_val(ia_1d_1, 1, iaa_1d_1, -1)
+        print *, iaa_1d_1
+        call assert(all(iaa_1d_1 .eq. [2,3,4,5,6,2,3]), 'Error in array.remove_val')
+        deallocate(iaa_1d_1)
+
+        call remove_val(ia_1d_1, 1, iaa_1d_1, 1, rev_=1)
+        print *, iaa_1d_1
+        call assert(all(iaa_1d_1 .eq. [1,2,3,4,5,6,2,3]), 'Error in array.remove_val')
+        deallocate(iaa_1d_1)
+
+
+        call remove_val(sa_1d_1, 'hello', saa_1d_1, -1)
+        print *, saa_1d_1
+        call assert(size(saa_1d_1) .eq. 1 .and. saa_1d_1(1) .eq. 'you', 'Error in array.remove_val_string')
+        deallocate(saa_1d_1) 
+
+        call remove_val(sa_1d_1, 'hello', saa_1d_1, rev_=1)
+        print *, saa_1d_1
+        call assert(size(saa_1d_1) .eq. 2 .and. saa_1d_1(2) .eq. 'you', 'Error in array.remove_val_string')
+        deallocate(saa_1d_1) 
+    End Subroutine
+
 End Program
 

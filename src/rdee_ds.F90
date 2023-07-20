@@ -113,6 +113,8 @@ Module rdee_ds
             list_toArray_double,&
             list_toArray_logical,&
             list_toArray_string
+        Procedure :: reverse => list_reverse
+
     End Type
 
     Type dict

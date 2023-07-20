@@ -1262,3 +1262,32 @@ Subroutine list_toArray_string(this, arr)
     end do
 
 end subroutine list_toArray_string
+Subroutine list_reverse(this)
+    !!! #########################################
+    ! This subroutine aims to reverse the list elements
+    !!! #########################################
+    implicit none
+    ! ..................................................... Arguments
+    class(list), intent(inout) :: this
+    ! ..................................................... Local variables
+    type(node), pointer :: p1, p2
+    ! ..................................................... main body
+    if (this%size .le. 1) return  !# 0 or 1, return
+    
+    p1 => this%head
+    p2 => null()
+    this%tail => this%head
+
+    do while (associated(p1))
+        if (associated(p2)) p2%prev => p1
+        p2 => p1
+        p1 => p1%next
+        p2%next => p2%prev
+    end do
+
+    nullify(p2%prev)
+    this%head => p2
+
+    return
+End Subroutine
+
