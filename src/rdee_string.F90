@@ -32,4 +32,35 @@ subroutine argwhere_c1s(S, c, idxs)  ! char in(1 as homophonic) string
 end subroutine argwhere_c1s
 
 
+
+! *********************************************************
+! This subroutine aims to convert all generic data type into string
+! *********************************************************
+function a2s(A, L_) result(S)
+    implicit none
+    ! ...................................... Arguments
+    class(*), intent(in) :: A
+    integer, intent(in), optional :: L_
+    ! ...................................... return variable
+    character(len=:),allocatable :: S
+    ! ...................................... local variable
+    integer :: L
+
+    ! ...................................... main body
+    if (present(L_)) then
+        L = L_
+    else
+        L = -1
+    end if
+
+    select type(A)
+        type (integer(kind=4))
+          
+          write(strT, '(I0)') type_info(2,j)
+
+
+
+end subroutine
+
+
 End Module
