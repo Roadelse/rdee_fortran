@@ -3,10 +3,10 @@ Program main
     implicit none
 
 
-    ! call test_ispan
-    ! call test_fspan
+    call test_ispan
+    call test_fspan
     call test_remove_val
-
+    call test_union_arr1d
 
 Contains
     Subroutine test_ispan()
@@ -75,6 +75,17 @@ Contains
         print *, saa_1d_1
         call assert(size(saa_1d_1) .eq. 2 .and. saa_1d_1(2) .eq. 'you', 'Error in array.remove_val_string, turn 2')
         deallocate(saa_1d_1) 
+    End Subroutine
+
+    Subroutine test_union_arr1d()
+        implicit none
+        integer(kind=4), allocatable :: iaa1(:)
+
+
+        iaa1 = union_arr1d([1,2], [3,4,5], [6,7])
+        print *, iaa1
+        call assert(all(iaa1 .eq. [1,2,3,4,5,6,7]), 'Error in rdee.array.union_arr1d for int4')
+        deallocate(iaa1)
     End Subroutine
 
 End Program

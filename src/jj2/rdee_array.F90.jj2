@@ -8,6 +8,12 @@ Module rdee_array
     !#jj2 endfor
     End Interface
 
+    Interface union_arr1d
+    !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical']:
+        Module Procedure union_arr1d_{{ type }}
+    !#jj2 endfor
+    End Interface
+
 
 Contains
     Function ispan(i1, i2, stride_) result(rst)
@@ -114,6 +120,44 @@ Contains
 
 !#jj2 endfor
 
+!#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical']:
+    Function union_arr1d_{{ type }}(a1, a2, a3, a4, a5, a6, a7) result(rst)
+        implicit none
+        ! ....................................... Arguments
+        {{ ftype[type] }}, intent(in) :: a1(:), a2(:)
+        {{ ftype[type] }}, intent(in), optional :: a3(:),a4(:),a5(:),a6(:),a7(:)
+        ! ....................................... return variable
+        {{ ftype[type] }}, allocatable :: rst(:)
+        integer :: S, i
+        ! ....................................... Main body
+        S = size(a1) + size(a2)
+        if (present(a3)) S = S + size(a3)
+        if (present(a4)) S = S + size(a4)
+        if (present(a5)) S = S + size(a5)
+        if (present(a6)) S = S + size(a6)
+        if (present(a7)) S = S + size(a7)
 
+        allocate(rst(S))
+        rst(1:size(a1)) = a1
+        rst(size(a1) + 1:size(a1)+size(a2)) = a2
+        if (present(a3)) rst( &
+            size(a1)+size(a2)+1 : &
+            size(a1)+size(a2)+size(a3)) = a3
+        if (present(a4)) rst( &
+            size(a1)+size(a2)+size(a3)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)) = a4
+        if (present(a5)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)) = a5
+        if (present(a6)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)) = a6
+        if (present(a7)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+size(a7)) = a7
+        
+        return
+    End Function
+    !#jj2 endfor
 End Module
 

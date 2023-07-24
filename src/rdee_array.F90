@@ -11,6 +11,14 @@ Module rdee_array
         Module Procedure remove_val_string
     End Interface
 
+    Interface union_arr1d
+        Module Procedure union_arr1d_int4
+        Module Procedure union_arr1d_int8
+        Module Procedure union_arr1d_float
+        Module Procedure union_arr1d_double
+        Module Procedure union_arr1d_logical
+    End Interface
+
 
 Contains
     Function ispan(i1, i2, stride_) result(rst)
@@ -404,4 +412,189 @@ Contains
         return
     End Subroutine remove_val_string
 
+    Function union_arr1d_int4(a1, a2, a3, a4, a5, a6, a7) result(rst)
+        implicit none
+        ! ....................................... Arguments
+        integer(kind=4), intent(in) :: a1(:), a2(:)
+        integer(kind=4), intent(in), optional :: a3(:),a4(:),a5(:),a6(:),a7(:)
+        ! ....................................... return variable
+        integer(kind=4), allocatable :: rst(:)
+        integer :: S, i
+        ! ....................................... Main body
+        S = size(a1) + size(a2)
+        if (present(a3)) S = S + size(a3)
+        if (present(a4)) S = S + size(a4)
+        if (present(a5)) S = S + size(a5)
+        if (present(a6)) S = S + size(a6)
+        if (present(a7)) S = S + size(a7)
+
+        allocate(rst(S))
+        rst(1:size(a1)) = a1
+        rst(size(a1) + 1:size(a1)+size(a2)) = a2
+        if (present(a3)) rst( &
+            size(a1)+size(a2)+1 : &
+            size(a1)+size(a2)+size(a3)) = a3
+        if (present(a4)) rst( &
+            size(a1)+size(a2)+size(a3)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)) = a4
+        if (present(a5)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)) = a5
+        if (present(a6)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)) = a6
+        if (present(a7)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+size(a7)) = a7
+        
+        return
+    End Function
+    Function union_arr1d_int8(a1, a2, a3, a4, a5, a6, a7) result(rst)
+        implicit none
+        ! ....................................... Arguments
+        integer(kind=8), intent(in) :: a1(:), a2(:)
+        integer(kind=8), intent(in), optional :: a3(:),a4(:),a5(:),a6(:),a7(:)
+        ! ....................................... return variable
+        integer(kind=8), allocatable :: rst(:)
+        integer :: S, i
+        ! ....................................... Main body
+        S = size(a1) + size(a2)
+        if (present(a3)) S = S + size(a3)
+        if (present(a4)) S = S + size(a4)
+        if (present(a5)) S = S + size(a5)
+        if (present(a6)) S = S + size(a6)
+        if (present(a7)) S = S + size(a7)
+
+        allocate(rst(S))
+        rst(1:size(a1)) = a1
+        rst(size(a1) + 1:size(a1)+size(a2)) = a2
+        if (present(a3)) rst( &
+            size(a1)+size(a2)+1 : &
+            size(a1)+size(a2)+size(a3)) = a3
+        if (present(a4)) rst( &
+            size(a1)+size(a2)+size(a3)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)) = a4
+        if (present(a5)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)) = a5
+        if (present(a6)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)) = a6
+        if (present(a7)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+size(a7)) = a7
+        
+        return
+    End Function
+    Function union_arr1d_float(a1, a2, a3, a4, a5, a6, a7) result(rst)
+        implicit none
+        ! ....................................... Arguments
+        real(kind=4), intent(in) :: a1(:), a2(:)
+        real(kind=4), intent(in), optional :: a3(:),a4(:),a5(:),a6(:),a7(:)
+        ! ....................................... return variable
+        real(kind=4), allocatable :: rst(:)
+        integer :: S, i
+        ! ....................................... Main body
+        S = size(a1) + size(a2)
+        if (present(a3)) S = S + size(a3)
+        if (present(a4)) S = S + size(a4)
+        if (present(a5)) S = S + size(a5)
+        if (present(a6)) S = S + size(a6)
+        if (present(a7)) S = S + size(a7)
+
+        allocate(rst(S))
+        rst(1:size(a1)) = a1
+        rst(size(a1) + 1:size(a1)+size(a2)) = a2
+        if (present(a3)) rst( &
+            size(a1)+size(a2)+1 : &
+            size(a1)+size(a2)+size(a3)) = a3
+        if (present(a4)) rst( &
+            size(a1)+size(a2)+size(a3)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)) = a4
+        if (present(a5)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)) = a5
+        if (present(a6)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)) = a6
+        if (present(a7)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+size(a7)) = a7
+        
+        return
+    End Function
+    Function union_arr1d_double(a1, a2, a3, a4, a5, a6, a7) result(rst)
+        implicit none
+        ! ....................................... Arguments
+        real(kind=8), intent(in) :: a1(:), a2(:)
+        real(kind=8), intent(in), optional :: a3(:),a4(:),a5(:),a6(:),a7(:)
+        ! ....................................... return variable
+        real(kind=8), allocatable :: rst(:)
+        integer :: S, i
+        ! ....................................... Main body
+        S = size(a1) + size(a2)
+        if (present(a3)) S = S + size(a3)
+        if (present(a4)) S = S + size(a4)
+        if (present(a5)) S = S + size(a5)
+        if (present(a6)) S = S + size(a6)
+        if (present(a7)) S = S + size(a7)
+
+        allocate(rst(S))
+        rst(1:size(a1)) = a1
+        rst(size(a1) + 1:size(a1)+size(a2)) = a2
+        if (present(a3)) rst( &
+            size(a1)+size(a2)+1 : &
+            size(a1)+size(a2)+size(a3)) = a3
+        if (present(a4)) rst( &
+            size(a1)+size(a2)+size(a3)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)) = a4
+        if (present(a5)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)) = a5
+        if (present(a6)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)) = a6
+        if (present(a7)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+size(a7)) = a7
+        
+        return
+    End Function
+    Function union_arr1d_logical(a1, a2, a3, a4, a5, a6, a7) result(rst)
+        implicit none
+        ! ....................................... Arguments
+        logical, intent(in) :: a1(:), a2(:)
+        logical, intent(in), optional :: a3(:),a4(:),a5(:),a6(:),a7(:)
+        ! ....................................... return variable
+        logical, allocatable :: rst(:)
+        integer :: S, i
+        ! ....................................... Main body
+        S = size(a1) + size(a2)
+        if (present(a3)) S = S + size(a3)
+        if (present(a4)) S = S + size(a4)
+        if (present(a5)) S = S + size(a5)
+        if (present(a6)) S = S + size(a6)
+        if (present(a7)) S = S + size(a7)
+
+        allocate(rst(S))
+        rst(1:size(a1)) = a1
+        rst(size(a1) + 1:size(a1)+size(a2)) = a2
+        if (present(a3)) rst( &
+            size(a1)+size(a2)+1 : &
+            size(a1)+size(a2)+size(a3)) = a3
+        if (present(a4)) rst( &
+            size(a1)+size(a2)+size(a3)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)) = a4
+        if (present(a5)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)) = a5
+        if (present(a6)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)) = a6
+        if (present(a7)) rst( &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+1 : &
+            size(a1)+size(a2)+size(a3)+size(a4)+size(a5)+size(a6)+size(a7)) = a7
+        
+        return
+    End Function
 End Module
