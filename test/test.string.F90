@@ -25,7 +25,7 @@ contains
 
         s1 = 'now'
 
-        print *, toString('what', 1, 3.14, 'now', complex(1,2), 'wow', nSpace=1)
+        print *, toString('what', 1, 3.14, 'now', cmplx(1,2), 'wow', nSpace=1)
         call assert(toString('now','you') .eq. 'nowyou', 'Error in rdee_string/toString, test 1')
         call assert(toString(s1, 1, 'you', nSpace=1) .eq. 'now 1 you', 'Error in rdee_string/toString, test 2')
     end subroutine
