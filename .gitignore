@@ -2,7 +2,7 @@
 /ref
 __pycache__
 
-build
-cbuild
+build*
+cbuild*
 .vscode
 *.lnk
