@@ -50,3 +50,17 @@ add_test(
     NAME test.array
     COMMAND $<TARGET_FILE:test.array>
 )
+
+
+
+add_executable(test.time test.time.F90)
+target_compile_options(test.time
+    PUBLIC -g)
+target_link_libraries(test.time
+    rdee_fortran
+)
+
+add_test(
+    NAME test.time
+    COMMAND $<TARGET_FILE:test.time>
+)
