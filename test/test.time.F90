@@ -1,6 +1,6 @@
 
 Program test_time
-    use rdee
+    use rdee_fortran
     implicit none
 
     call test_now_str()
