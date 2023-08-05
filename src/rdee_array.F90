@@ -21,24 +21,24 @@ Module rdee_array
 
 
 Contains
-    Function ispan(i1, i2, stride_) result(rst)
+    Function ispan(i1, i2, stride) result(rst)
         implicit none
         ! ............................. Arguments
         integer, intent(in) :: i1, i2
-        integer, intent(in), optional :: stride_
+        integer, intent(in), optional :: stride
         ! ............................. Local variables
         integer, allocatable :: rst(:)
-        integer :: N, i, stride
+        integer :: N, i, stride_
         ! ............................. Main body
-        if (present(stride_)) then
-            stride = stride_
+        if (present(stride)) then
+            stride_ = stride
         else
-            stride = 1
+            stride_ = 1
         end if
-        N = (i2 - i1) / stride + 1
+        N = (i2 - i1) / stride_ + 1
         allocate(rst(N))
         do i = 1, N
-            rst(i) = i1 + (i-1) * stride
+            rst(i) = i1 + (i-1) * stride_
         end do
 
         return

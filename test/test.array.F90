@@ -1,5 +1,5 @@
 Program main
-    use rdee_fortran
+    use rdee
     implicit none
 
 

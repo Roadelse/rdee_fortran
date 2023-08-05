@@ -4,7 +4,8 @@ Program main
 
     call test_argwhere_c1s
     call test_toString
-
+    call test_string1dBuilder
+    
 contains
     subroutine test_argwhere_c1s()
         character(80) :: s1
@@ -28,6 +29,26 @@ contains
         print *, toString('what', 1, 3.14, 'now', cmplx(1,2), 'wow', nSpace=1)
         call assert(toString('now','you') .eq. 'nowyou', 'Error in rdee_string/toString, test 1')
         call assert(toString(s1, 1, 'you', nSpace=1) .eq. 'now 1 you', 'Error in rdee_string/toString, test 2')
+    end subroutine
+
+    subroutine test_string1dBuilder()
+        implicit none
+        
+        print *, ''
+        print *, ''
+        print *, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        print *, '>>> start test_string1dBuilder'
+        print *, '>>> assume success without compiling and running errors'
+        print *, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        call pri_(string1dBuilder('how', ' ', 'about', ' ', 'you', '!', ''))
+
+    end subroutine
+
+    subroutine pri_(sa1)
+        implicit none
+        character(*), intent(in) :: sa1(:)
+
+        print *, sa1
     end subroutine
 
 End Program

@@ -89,4 +89,96 @@ contains
     end subroutine print_generic
 end function tostring
 
+
+
+! *********************************************************
+! This function aims to build a string array from strings
+! with different length
+! *********************************************************
+function string1dBuilder(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10) result(rst)
+    implicit none
+    ! ................................. Arguments
+    character(*), intent(in) :: s1, s2
+    character(*), intent(in), optional :: s3, s4, s5, s6, s7, s8, s9, s10
+    ! ................................. Return variable
+    character(len=:), allocatable :: rst(:)
+    ! ................................. Local variable
+    integer :: maxL, size
+    integer :: j
+    ! ................................. Main body
+    maxL = max(len_trim(s1), len_trim(s2))
+    size = 2
+    if (present(s3)) then
+        maxL = max(maxL, len_trim(s3))
+        size = size + 1
+    end if
+    if (present(s4)) then
+        maxL = max(maxL, len_trim(s4))
+        size = size + 1
+    end if
+    if (present(s5)) then
+        maxL = max(maxL, len_trim(s5))
+        size = size + 1
+    end if
+    if (present(s6)) then
+        maxL = max(maxL, len_trim(s6))
+        size = size + 1
+    end if
+    if (present(s7)) then
+        maxL = max(maxL, len_trim(s7))
+        size = size + 1
+    end if
+    if (present(s8)) then
+        maxL = max(maxL, len_trim(s8))
+        size = size + 1
+    end if
+    if (present(s9)) then
+        maxL = max(maxL, len_trim(s9))
+        size = size + 1
+    end if
+    if (present(s10)) then
+        maxL = max(maxL, len_trim(s10))
+        size = size + 1
+    end if
+    allocate(character(len=maxL) :: rst(size))
+
+    rst(1) = s1
+    rst(2) = s2
+    
+    j = 3
+    if (present(s3)) then
+        rst(j) = s3
+        j = j + 1
+    end if
+    if (present(s4)) then
+        rst(j) = s4
+        j = j + 1
+    end if
+    if (present(s5)) then
+        rst(j) = s5
+        j = j + 1
+    end if
+    if (present(s6)) then
+        rst(j) = s6
+        j = j + 1
+    end if
+    if (present(s7)) then
+        rst(j) = s7
+        j = j + 1
+    end if
+    if (present(s8)) then
+        rst(j) = s8
+        j = j + 1
+    end if
+    if (present(s9)) then
+        rst(j) = s9
+        j = j + 1
+    end if
+    if (present(s10)) then
+        rst(j) = s10
+        j = j + 1
+    end if
+    return
+end function
+
 End Module
