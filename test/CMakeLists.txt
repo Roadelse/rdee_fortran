@@ -1,66 +1,29 @@
 
-add_executable(test.node test.node.F90)
-target_link_libraries(test.node
-    rdee_fortran
-)
+link_libraries(rdee_fortran)
 
-add_executable(test.list test.list.F90)
-target_link_libraries(test.list
-    rdee_fortran
-)
+function(ecsl_test testID)  # encapsulation of test
+    add_executable(test.${testID} test.${testID}.F90)
+    target_link_libraries(test.${testID} rdee_fortran)
+    target_compile_options(test.${testID} PUBLIC -g)
+    
+    if (${CMAKE_Fortran_COMPILER} STREQUAL "swgfortran")
+        add_test(
+            NAME test.${testID}
+            COMMAND "bsub -b -I -q q_sw_expr -n 1 -cgsp 64 -share_size 7000 -host_stack 512 $<TARGET_FILE:test.${testID}>"
+        )
+    else()
+        add_test(
+            NAME test.${testID}
+            COMMAND $<TARGET_FILE:test.${testID}>
+        )
+    endif()
 
-add_executable(test.dict test.dict.F90)
-target_compile_options(test.dict
-    PUBLIC -g)
-target_link_libraries(test.dict
-    rdee_fortran
-)
+endfunction()
 
-add_executable(test.string test.string.F90)
-target_compile_options(test.string
-    PUBLIC -g)
-target_link_libraries(test.string
-    rdee_fortran
-)
+ecsl_test(node)
+ecsl_test(list)
+ecsl_test(dict)
+ecsl_test(array)
+ecsl_test(string)
+ecsl_test(time)
 
-add_executable(test.array test.array.F90)
-target_compile_options(test.array
-    PUBLIC -g)
-target_link_libraries(test.array
-    rdee_fortran
-)
-
-add_test(
-    NAME test.node
-    COMMAND $<TARGET_FILE:test.node>
-)
-add_test(
-    NAME test.list
-    COMMAND $<TARGET_FILE:test.list>
-)
-add_test(
-    NAME test.dict
-    COMMAND $<TARGET_FILE:test.dict>
-)
-add_test(
-    NAME test.string
-    COMMAND $<TARGET_FILE:test.string>
-)
-add_test(
-    NAME test.array
-    COMMAND $<TARGET_FILE:test.array>
-)
-
-
-
-add_executable(test.time test.time.F90)
-target_compile_options(test.time
-    PUBLIC -g)
-target_link_libraries(test.time
-    rdee_fortran
-)
-
-add_test(
-    NAME test.time
-    COMMAND $<TARGET_FILE:test.time>
-)
