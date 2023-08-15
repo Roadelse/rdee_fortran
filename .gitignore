@@ -6,3 +6,5 @@ build*
 cbuild*
 .vscode
 *.lnk
+
+cmake/modules/copy-modules.sh
