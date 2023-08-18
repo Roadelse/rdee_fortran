@@ -22,10 +22,10 @@ Function now_str() result(rst)
     return
 End Function now_str
 
-subroutine now(year, month, day, hour, minute, second)
+subroutine now(year, month, day, hour, minute, second, millisecond)
     ! from GPT-4 after several prompt @2023-08-18 14:39:38
     implicit none
-    integer, intent(out), optional :: year, month, day, hour, minute, second
+    integer, intent(out), optional :: year, month, day, hour, minute, second, millisecond
     integer :: values(8)
 
     call date_and_time(values=values)
@@ -48,6 +48,9 @@ subroutine now(year, month, day, hour, minute, second)
     if (present(second)) then
         second = values(7)
     end if
+    if (present(millisecond)) then
+        millisecond = values(8)
+    end if
 end subroutine now
 
 logical function isLeap(year)
@@ -56,16 +59,16 @@ logical function isLeap(year)
     isLeap = mod(year, 4) == 0 .and. (mod(year, 100) /= 0 .or. mod(year, 400) == 0)
 end function isLeap
 
-integer function calTS(year, month, day, hour, minute, second)
+real(kind=8) function calTS(year, month, day, hour, minute, second, millisecond)
     ! ***********************************************************
     ! This function aims to get time stamp
     ! with no consideration for leap seconds and milliseconds
     ! ***********************************************************
     implicit none
     ! ....................................... Argument
-    integer, intent(in) :: year, month, day, hour, minute, second
+    integer, intent(in) :: year, month, day, hour, minute, second, millisecond
     ! ....................................... local variables
-    integer :: i, leap_years, normal_years, days_in_month, total_days
+    integer :: i, leap_years, normal_years, days_in_month(12), total_days
     ! ....................................... 
 
     days_in_month = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
@@ -83,16 +86,21 @@ integer function calTS(year, month, day, hour, minute, second)
     end do
     total_days = total_days + day - 1
 
-    nowTS = total_days * 24 * 3600 + hour * 3600 + minute * 60 + second
+    calTS = total_days * 24 * 3600 + hour * 3600 + minute * 60 + second + millisecond / 1000d0
 end function calTS
 
 Function nowTS() result(rst)
+    ! ***************************************************************
+    ! This function aims to get the current time stamp 
+    ! Please note that the result is based on UTC time, which is not correct
+    ! Need to be updated later, maybe use C-bind functions to get UTC time
+    ! ***************************************************************
     implicit none
+    integer :: y, m, d, mi, hr, se, ms
+    real(kind=8) :: rst
 
-    integer :: y, m, d, mi, hr, se
-
-    call now(year=y, month=m, day=d, hour=hr, minute=mi, second=se)
-    rst = calTS(y, m, d, hr, mi, se)
+    call now(year=y, month=m, day=d, hour=hr, minute=mi, second=se, millisecond=ms)
+    rst = calTS(y, m, d, hr, mi, se, ms)
 
     return
 
@@ -104,9 +112,10 @@ Function rdTimer(id, init) result(rst)
     character(*), intent(in) :: id
     integer, intent(in), optional :: init
     ! ....................................... Local variable
-    real(kind=4) :: rst
+    real(kind=8) :: rst
     ! ....................................... Local variable
     integer :: init_
+    real(kind=8) :: ts, ts0
 
     ! ....................................... main body
     ! >>>>>>>>>>>>>>>>>>> handle optinal arguments
@@ -116,10 +125,21 @@ Function rdTimer(id, init) result(rst)
         init_ = 0
     end if
 
-    ! if (init_ .ne. 0) then
+    if (rdTimer_results%size .eq. 0) then
+        rdTimer_results = dict()
+    end if
 
+    ! print *, 'now Ts is ', int(nowTS())
+    if (init_ .ne. 0 .or. .not. rdTimer_results%hasKey(id)) then
+        call rdTimer_results%set(id, nowTS())
+        rst = -1.
+    else
+        ts = nowTS()
+        call rdTimer_results%get(id, ts0)
+        rst = ts - ts0
+    end if
 
-
+    return
 End Function
 
 End Module

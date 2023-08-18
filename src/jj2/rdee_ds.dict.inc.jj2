@@ -229,6 +229,35 @@ subroutine dict_set_a1d(this, k, v)
     ! p => null()
 End Subroutine dict_set_a1d
 
+
+Function dict_hasKey(this, k) result(rst)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+    ! ............................ Return variable
+    logical :: rst
+    ! ............................ main body
+    if (this%size .eq. 0) then
+        rst = .False.
+        return
+    end if
+
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    if (.not. associated(listTar%head)) then
+        rst = .False.
+        return
+    end if
+    rst = .True.
+    return
+End Function dict_hasKey
+
+
 subroutine dict_get(this, k, v)
     implicit none
     ! ............................ Argument
@@ -259,6 +288,7 @@ subroutine dict_get(this, k, v)
 
     stop 'Error in rdee_ds/dict/get, cannot find target key'
 End Subroutine
+
 
 
 

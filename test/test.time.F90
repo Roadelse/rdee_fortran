@@ -5,6 +5,8 @@ Program test_time
 
     call test_now_str()
     call test_now()
+    call test_nowTS()
+    call test_rdTimer()
 
 contains
 
@@ -34,5 +36,28 @@ contains
 
 
     end subroutine
+
+    subroutine test_nowTS()
+        implicit none
+        real(kind=4) :: ts
+
+        ts = nowTS()
+        print *, 'current time stamp is ', ts
+
+    end subroutine
+
+    subroutine test_rdTimer()
+        implicit none
+        real(kind=8) :: deltaTime
+
+        deltaTime = rdTimer('test', 1)
+        call sleep(1)
+        deltaTime = rdTimer('test')
+
+        print *, 'delta time = ', deltaTime
+        call assert(deltaTime .gt. 1d0, 'Error in rdee_time, test_rdTimer, too quick')
+        call assert(deltaTime .lt. 1.1d0, 'Error in rdee_time, test_rdTimer, too slow')
+
+    end Subroutine
 
 End Program

@@ -53,5 +53,9 @@ program main
     call assert(d1 .eq. 9.9d0, 'Error in rdee_dict test C1')
     call assert(all(iaa1 .eq. [2,3,4]), 'Error in rdee_dict test C1')
 
+    print *, '--------- (D) now test hasKey ----------'
+    call assert(map1%hasKey(7), 'Error in rdee_dict test D1')
+    call assert(.not. map1%hasKey('aha'), 'Error in rdee_dict test D1')
+
 
 end program
