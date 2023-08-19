@@ -3,7 +3,13 @@ Module rdee_time
     use rdee_ds
     implicit none
     
-    type(dict) :: rdTimer_results
+    type(dict) :: rdTimer_TS_dict
+    real(kind=8) :: rdTimer_TS_array(10) = [0,0,0,0,0,0,0,0,0,0]
+
+    Interface rdTimer
+        module procedure rdTimer_by_id
+        module procedure rdTimer_by_idx
+    End Interface
 
 
 Contains
@@ -106,12 +112,21 @@ Function nowTS() result(rst)
 
 End Function
 
-Function rdTimer(id, init) result(rst)
+Function rdTimer_by_id(id, init) result(rst)
+    ! ***************************************************************
+    ! This functions aims to provide a timer to calculate time interval
+    ! between two invokes for this function
+    ! use a rdee dict to load/store time-stamp values
+    ! >>>>>>>>>>>>>>>>>>>>>>>
+    ! Usage: 
+    !       tmp = rdTimer('case1', init=1)  # init can be omitted
+    !       tmp = rdTimer('case1')  # get results
+    ! ***************************************************************
     implicit none
     ! ....................................... Argument
     character(*), intent(in) :: id
     integer, intent(in), optional :: init
-    ! ....................................... Local variable
+    ! ....................................... Return variable
     real(kind=8) :: rst
     ! ....................................... Local variable
     integer :: init_
@@ -125,21 +140,69 @@ Function rdTimer(id, init) result(rst)
         init_ = 0
     end if
 
-    if (rdTimer_results%size .eq. 0) then
-        rdTimer_results = dict()
+    if (rdTimer_TS_dict%size .eq. 0) then
+        rdTimer_TS_dict = dict()
     end if
 
-    ! print *, 'now Ts is ', int(nowTS())
-    if (init_ .ne. 0 .or. .not. rdTimer_results%hasKey(id)) then
-        call rdTimer_results%set(id, nowTS())
+    if (init_ .ne. 0 .or. .not. rdTimer_TS_dict%hasKey(id)) then
+        call rdTimer_TS_dict%set(id, nowTS())
         rst = -1.
     else
         ts = nowTS()
-        call rdTimer_results%get(id, ts0)
+        call rdTimer_TS_dict%get(id, ts0)
         rst = ts - ts0
     end if
 
     return
 End Function
+
+
+Function rdTimer_by_idx(idx, init) result(rst)
+    ! ***************************************************************
+    ! This functions aims to provide a more efficient way to ld/st stored 
+    ! time-stamp via array
+    ! Support max to 10 records
+    ! >>>>>>>>>>>>>>>>>>>>>>>
+    ! Usage: 
+    !       tmp = rdTimer()  # space id equals to 1
+    !       tmp = rdTimer()  # get results
+    ! ***************************************************************
+    implicit none
+    ! ....................................... Argument
+    integer, intent(in), optional :: idx
+    integer, intent(in), optional :: init
+    ! ....................................... Return variable
+    real(kind=8) :: rst
+    ! ....................................... Local variable
+    integer :: init_, idx_
+
+    ! ....................................... main body
+    ! >>>>>>>>>>>>>>>>>>> handle optinal arguments
+    if (present(init)) then
+        init_ = init
+    else
+        init_ = 0
+    end if
+    if (present(idx)) then
+        idx_ = 1
+    else
+        idx_ = idx
+    end if
+
+    if (idx .lt. 1 .or. idx .gt. 10) then
+        print *, 'Error! rdee_time.rdTimer_TS_array is a 5-len array, index must be within 1...5'
+        stop 1
+    end if
+
+    if (init_ .ne. 0 .or. rdTimer_TS_array(idx) .eq. 0) then
+        rdTimer_TS_array(idx) = nowTS()
+        rst = -1.
+    else
+        rst = nowTS() - rdTimer_TS_array(idx)
+    end if
+
+    return
+End Function
+
 
 End Module

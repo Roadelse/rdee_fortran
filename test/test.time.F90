@@ -48,15 +48,25 @@ contains
 
     subroutine test_rdTimer()
         implicit none
-        real(kind=8) :: deltaTime
+        real(kind=8) :: deltaTime, temp
 
-        deltaTime = rdTimer('test', 1)
+        print *, '>>>>>>>>>>>>>>>>>>>>> now start to test rdTimer'
+
+        temp = rdTimer('test', 1)
         call sleep(1)
         deltaTime = rdTimer('test')
 
         print *, 'delta time = ', deltaTime
-        call assert(deltaTime .gt. 1d0, 'Error in rdee_time, test_rdTimer, too quick')
-        call assert(deltaTime .lt. 1.1d0, 'Error in rdee_time, test_rdTimer, too slow')
+        call assert(deltaTime .gt. 0.999d0, toString('Error in rdee_time, test_rdTimer, too quick, now is ', deltaTime))
+        call assert(deltaTime .lt. 1.01d0, toString('Error in rdee_time, test_rdTimer, too slow, now is ', deltaTime))
+
+        
+        temp = rdTimer(1)
+        call sleep(1)
+        deltaTime = rdTimer(1)
+        print *, 'delta time = ', deltaTime
+        call assert(deltaTime .gt. 0.999d0, toString('Error in rdee_time, test_rdTimer, too quick, now is ', deltaTime))
+        call assert(deltaTime .lt. 1.01d0, toString('Error in rdee_time, test_rdTimer, too slow, now is ', deltaTime))
 
     end Subroutine
 
