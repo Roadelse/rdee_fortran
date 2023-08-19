@@ -184,21 +184,21 @@ Function rdTimer_by_idx(idx, init) result(rst)
         init_ = 0
     end if
     if (present(idx)) then
-        idx_ = 1
-    else
         idx_ = idx
+    else
+        idx_ = 1
     end if
 
-    if (idx .lt. 1 .or. idx .gt. 10) then
+    if (idx_ .lt. 1 .or. idx_ .gt. 10) then
         print *, 'Error! rdee_time.rdTimer_TS_array is a 5-len array, index must be within 1...5'
         stop 1
     end if
 
-    if (init_ .ne. 0 .or. rdTimer_TS_array(idx) .eq. 0) then
-        rdTimer_TS_array(idx) = nowTS()
+    if (init_ .ne. 0 .or. rdTimer_TS_array(idx_) .eq. 0) then
+        rdTimer_TS_array(idx_) = nowTS()
         rst = -1.
     else
-        rst = nowTS() - rdTimer_TS_array(idx)
+        rst = nowTS() - rdTimer_TS_array(idx_)
     end if
 
     return

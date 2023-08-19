@@ -61,9 +61,9 @@ contains
         call assert(deltaTime .lt. 1.01d0, toString('Error in rdee_time, test_rdTimer, too slow, now is ', deltaTime))
 
         
-        temp = rdTimer(1)
+        temp = rdTimer()
         call sleep(1)
-        deltaTime = rdTimer(1)
+        deltaTime = rdTimer()
         print *, 'delta time = ', deltaTime
         call assert(deltaTime .gt. 0.999d0, toString('Error in rdee_time, test_rdTimer, too quick, now is ', deltaTime))
         call assert(deltaTime .lt. 1.01d0, toString('Error in rdee_time, test_rdTimer, too slow, now is ', deltaTime))
