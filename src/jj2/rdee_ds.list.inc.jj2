@@ -107,7 +107,7 @@ subroutine list_print(this)
 
 end subroutine
 
-function list_getf_node(this, pos) result (rst_node)
+function list_fget_node(this, pos) result (rst_node)
     implicit none
     ! ............................ Arguments
     class(list), intent(in) :: this
@@ -117,7 +117,7 @@ function list_getf_node(this, pos) result (rst_node)
 
     call this%get(pos, rst_node)
 
-end function list_getf_node
+end function list_fget_node
 
 
 subroutine list_get_node(this, pos, inode, stat, errmsg)
@@ -206,8 +206,38 @@ subroutine list_get_{{ type }}(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+!#jj2 if not type.startswith("string"):
+function list_fget_{{ type }}(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    {{ ftype[type] }}{{ ', allocatable ' if type.endswith('A1d') }} :: item{{ func_get_rank(type) }}
+
+    call this%get(pos, item)
+end function list_fget_{{ type }}
+!#jj2 endif
 !#jj2 endfor
 
+function list_fget_string(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    character(len=256) :: item
+
+    call this%get(pos, item)
+end function list_fget_string
+function list_fget_stringA1d(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    character(len=256), allocatable :: item(:)
+
+    call this%get(pos, item)
+end function list_fget_stringA1d
 
 subroutine list_append(this, item)
     implicit none

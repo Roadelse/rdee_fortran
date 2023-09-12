@@ -61,4 +61,33 @@ Contains
         return
     end function
 
+    !#jj2 for opn in ['add', 'sub', 'mul', 'div']
+    !#jj2 set op = '+' if opn == 'add' else '-' if opn == 'sub' else '*' if opn == 'mul' else '/'
+    !#jj2 set vn = type[0] + type[-1]
+    function add_um(um1, um2) result(rst)
+        implicit none
+        ! ··················· Arguments
+        class(*), intent(in) :: um1, um2
+        class(*),allocatable :: rst
+        ! ··················· main body
+        Select type(up1 => um1)
+            !#jj2 for type in ['int4', 'int8', 'real4', 'real8']:
+            type is ({{ ftype[type] }})
+                select type(up2 => um2)
+                    !#jj2 for type2 in ['int4', 'int8', 'real4', 'real8']:
+                    type is ({{ ftype[type2] }})
+                        rst = up1 {{ op }} up2
+                    !#jj2 endfor
+                    class default
+                        print *, 'Error! unmatched data types for um1 and um2'
+                        stop 1
+                end select
+            !#jj2 endfor
+            class default
+                print *, 'the class(*) u is not {{ ftype[type] }}'
+                stop 1
+        end select
+    end function
+    !#jj2 endfor
+
 End Module

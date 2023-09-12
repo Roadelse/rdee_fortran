@@ -1,9 +1,9 @@
 
 Message(STATUS "¦ compiler id = ${CMAKE_Fortran_COMPILER_ID}")
 if (${CMAKE_Fortran_COMPILER_ID} STREQUAL "Intel")
-    add_compile_options(-g -fPIE "SHELL:-check all" "SHELL:-warn all" -std08 "SHELL:-warn nounused")
+    add_compile_options(-O3 -fPIE "SHELL:-check all" "SHELL:-warn all" -std08 "SHELL:-warn nounused")
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL "GNU")
-    add_compile_options(-g -fPIE -ffree-line-length-none -std=f2008 -Wall -fcheck=all -fall-intrinsics -Wno-unused)
+    add_compile_options(-O3 -fPIE -ffree-line-length-none -std=f2008 -Wall -fcheck=all -fall-intrinsics -Wno-unused)
 endif()
 
 

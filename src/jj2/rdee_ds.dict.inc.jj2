@@ -87,7 +87,7 @@ subroutine dict_print(this, key)
         call nodeT%print
     else
         do i = 1, L%size
-            n2 = L%get_f(i)
+            n2 = L%fget_node(i)
             call this%get(n2%item, nodeT)
             call nodeT%print
         end do
@@ -258,6 +258,31 @@ Function dict_hasKey(this, k) result(rst)
 End Function dict_hasKey
 
 
+subroutine dict_p2node(this, k, np)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    type(node), pointer, intent(inout) :: np
+    ! ............................ local variable
+    type(node), pointer :: p
+    type(list) :: listTar
+    integer :: hashVal
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    np => listTar%head
+    
+    do while (associated(np))
+        if (np%hasKey(k)) then
+            return
+        end if
+        p => p%next
+    end do
+
+    return
+End Subroutine
+
 subroutine dict_get(this, k, v)
     implicit none
     ! ............................ Argument
@@ -320,7 +345,48 @@ Subroutine dict_get1d_{{ type }}(this, k, v1d)
     stop 'Error in rdee_ds/dict/get, cannot find target key'
 
 End Subroutine dict_get1d_{{ type }}
+
+!#jj2 if type != "string":
+Function dict_fget1d_{{ type }}(this, k) result(v1d)
+    implicit none
+    ! ............................ Argument & return variable
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    {{ ftype[type] }}, allocatable :: v1d(:)
+    call this%get(k, v1d)
+End Function dict_fget1d_{{ type }}
+
+Function dict_fget_{{ type }}(this, k) result(v)
+    implicit none
+    ! ............................ Argument & return variable
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    {{ ftype[type] }} :: v
+
+    call this%get(k, v)
+End Function dict_fget_{{ type }}
+!#jj2 endif
 !#jj2 endfor
+Function dict_fget1d_string(this, k) result(v1d)
+    implicit none
+    ! ............................ Argument & return variable
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    character(len=256), allocatable :: v1d(:)
+    call this%get(k, v1d)
+End Function dict_fget1d_string
+
+Function dict_fget_string(this, k) result(v)
+    implicit none
+    ! ............................ Argument & return variable
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    character(len=256) :: v
+
+    call this%get(k, v)
+End Function dict_fget_string
+
+
 
 subroutine dict_del(this, k)
     implicit none

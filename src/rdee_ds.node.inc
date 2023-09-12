@@ -396,6 +396,27 @@ subroutine node_get_item1d_int4(this, item, stat, errmsg)
         stop 'Error in rdee_ds/node/get_item1d_int4'
     end if
 end subroutine
+
+function node_fget_item1d_int4(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    integer(kind=4), allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_int4
+function node_fget_item_int4(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    integer(kind=4) :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_int4
 subroutine node_get_item1d_int8(this, item, stat, errmsg)
     implicit none
 
@@ -432,6 +453,27 @@ subroutine node_get_item1d_int8(this, item, stat, errmsg)
         stop 'Error in rdee_ds/node/get_item1d_int8'
     end if
 end subroutine
+
+function node_fget_item1d_int8(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    integer(kind=8), allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_int8
+function node_fget_item_int8(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    integer(kind=8) :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_int8
 subroutine node_get_item1d_float(this, item, stat, errmsg)
     implicit none
 
@@ -468,6 +510,27 @@ subroutine node_get_item1d_float(this, item, stat, errmsg)
         stop 'Error in rdee_ds/node/get_item1d_float'
     end if
 end subroutine
+
+function node_fget_item1d_float(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    real(kind=4), allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_float
+function node_fget_item_float(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    real(kind=4) :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_float
 subroutine node_get_item1d_double(this, item, stat, errmsg)
     implicit none
 
@@ -504,6 +567,27 @@ subroutine node_get_item1d_double(this, item, stat, errmsg)
         stop 'Error in rdee_ds/node/get_item1d_double'
     end if
 end subroutine
+
+function node_fget_item1d_double(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    real(kind=8), allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_double
+function node_fget_item_double(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    real(kind=8) :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_double
 subroutine node_get_item1d_logical(this, item, stat, errmsg)
     implicit none
 
@@ -540,6 +624,27 @@ subroutine node_get_item1d_logical(this, item, stat, errmsg)
         stop 'Error in rdee_ds/node/get_item1d_logical'
     end if
 end subroutine
+
+function node_fget_item1d_logical(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    logical, allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_logical
+function node_fget_item_logical(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    logical :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_logical
 subroutine node_get_item1d_string(this, item, stat, errmsg)
     implicit none
 
@@ -576,6 +681,30 @@ subroutine node_get_item1d_string(this, item, stat, errmsg)
         stop 'Error in rdee_ds/node/get_item1d_string'
     end if
 end subroutine
+
+function node_fget_item1d_string(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    character(len=256), allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_string
+function node_fget_item_string(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    character(len=256) :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_string
+
+
+
 subroutine node_set_v(this, x)
     implicit none
     ! ............................ Argument

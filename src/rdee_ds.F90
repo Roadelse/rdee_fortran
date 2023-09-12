@@ -23,12 +23,12 @@ Module rdee_ds
         Procedure :: print => node_print
       
         procedure ::node_get_item
-        Procedure :: node_get_item1d_int4
-        Procedure :: node_get_item1d_int8
-        Procedure :: node_get_item1d_float
-        Procedure :: node_get_item1d_double
-        Procedure :: node_get_item1d_logical
-        Procedure :: node_get_item1d_string
+        Procedure :: node_get_item1d_int4, fget1d_int4 => node_fget_item1d_int4, fget_int4 => node_fget_item_int4
+        Procedure :: node_get_item1d_int8, fget1d_int8 => node_fget_item1d_int8, fget_int8 => node_fget_item_int8
+        Procedure :: node_get_item1d_float, fget1d_float => node_fget_item1d_float, fget_float => node_fget_item_float
+        Procedure :: node_get_item1d_double, fget1d_double => node_fget_item1d_double, fget_double => node_fget_item_double
+        Procedure :: node_get_item1d_logical, fget1d_logical => node_fget_item1d_logical, fget_logical => node_fget_item_logical
+        Procedure :: node_get_item1d_string, fget1d_string => node_fget_item1d_string, fget_string => node_fget_item_string
         Generic :: get => node_get_item, &
             node_get_item1d_int4, &
             node_get_item1d_int8, &
@@ -80,8 +80,19 @@ Module rdee_ds
             list_get_logicalA1d,&
             list_get_string,&
             list_get_stringA1d
-        Procedure :: get_f => list_getf_node
-
+        Procedure :: fget_node => list_fget_node
+        Procedure :: fget_int => list_fget_int
+        Procedure :: fget_int8 => list_fget_int8
+        Procedure :: fget_float => list_fget_float
+        Procedure :: fget_double => list_fget_double
+        Procedure :: fget_logical => list_fget_logical
+        Procedure :: fget_string => list_fget_string
+        Procedure :: fget1d_int => list_fget_intA1d
+        Procedure :: fget1d_int8 => list_fget_int8A1d
+        Procedure :: fget1d_float => list_fget_floatA1d
+        Procedure :: fget1d_double => list_fget_doubleA1d
+        Procedure :: fget1d_logical => list_fget_logicalA1d
+        Procedure :: fget1d_string => list_fget_stringA1d
         Procedure :: list_append, list_append_a1d
         Generic :: append => list_append, list_append_a1d
         Procedure :: list_insert, list_insert_a1d
@@ -137,6 +148,18 @@ Module rdee_ds
             dict_get1d_double,&
             dict_get1d_logical,&
             dict_get1d_string
+        Procedure :: fget1d_int4 => dict_fget1d_int4
+        Procedure :: fget_int4 => dict_fget_int4
+        Procedure :: fget1d_int8 => dict_fget1d_int8
+        Procedure :: fget_int8 => dict_fget_int8
+        Procedure :: fget1d_float => dict_fget1d_float
+        Procedure :: fget_float => dict_fget_float
+        Procedure :: fget1d_double => dict_fget1d_double
+        Procedure :: fget_double => dict_fget_double
+        Procedure :: fget1d_logical => dict_fget1d_logical
+        Procedure :: fget_logical => dict_fget_logical
+        Procedure :: fget1d_string => dict_fget1d_string
+        Procedure :: fget_string => dict_fget_string
         Procedure :: dict_set, dict_set_a1d, dict_set_node
         Generic :: set => dict_set, dict_set_a1d, dict_set_node
         Procedure :: del => dict_del
@@ -146,6 +169,7 @@ Module rdee_ds
         Procedure :: keys => dict_keys
         Procedure :: update => dict_update
         Procedure :: hasKey => dict_hasKey
+        Procedure :: p2node => dict_p2node
     End Type
 
     abstract Interface

@@ -135,4 +135,38 @@ Contains
         return
     end function
 
+    integer(kind=4) function add_int_um(i, u) result(rst)
+        implicit none
+        ! ··················· Arguments
+        integer(kind=4), intent(in) :: i
+        class(*), intent(in) :: u
+
+        ! ··················· Arguments
+        Select type(ui => u)
+            type is (integer(kind=4))
+                rst = i + ui
+                return
+            class default
+                print *, 'the class(*) u is not integer(kind=4)'
+                stop 1
+        end select
+
+    end function
+    integer(kind=4) function add_um_int(u, i) result(rst)
+        implicit none
+        ! ··················· Arguments
+        class(*), intent(in) :: u
+        integer(kind=4), intent(in) :: i
+
+        ! ··················· Arguments
+        Select type(ui => u)
+            type is (integer(kind=4))
+                rst = i + ui
+                return
+            class default
+                print *, 'the class(*) u is not integer(kind=4)'
+                stop 1
+        end select
+    end function
+
 End Module

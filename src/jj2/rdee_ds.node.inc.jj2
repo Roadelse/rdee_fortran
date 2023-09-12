@@ -324,7 +324,51 @@ subroutine node_get_item1d_{{ type }}(this, item, stat, errmsg)
         stop 'Error in rdee_ds/node/get_item1d_{{ type }}'
     end if
 end subroutine
+
+!#jj2 if type != "string":
+function node_fget_item1d_{{ type }}(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    {{ ftype[type] }}, allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_{{ type }}
+function node_fget_item_{{ type }}(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    {{ ftype[type] }} :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_{{ type }}
+!#jj2 endif
 !#jj2 endfor
+function node_fget_item1d_string(this) result(v1d)
+    implicit none
+
+    class(node), intent(in) :: this
+    character(len=256), allocatable :: v1d(:)
+
+    integer :: istat
+
+    call this%get(v1d)
+end function node_fget_item1d_string
+function node_fget_item_string(this) result(v)
+    implicit none
+
+    class(node), intent(in) :: this
+    character(len=256) :: v
+
+    integer :: istat
+
+    call this%get(v)
+end function node_fget_item_string
+
 
 
 subroutine node_set_v(this, x)

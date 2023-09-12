@@ -3,10 +3,12 @@ Program test_time
     use rdee_fortran
     implicit none
 
-    call test_now_str()
-    call test_now()
-    call test_nowTS()
-    call test_rdTimer()
+    ! call test_now_str()
+    ! call test_now()
+    ! call test_nowTS()
+    ! call test_rdTimer()
+
+    call perf_nowTS()
 
 contains
 
@@ -39,7 +41,7 @@ contains
 
     subroutine test_nowTS()
         implicit none
-        real(kind=4) :: ts
+        real(kind=8) :: ts
 
         ts = nowTS()
         print *, 'current time stamp is ', ts
@@ -69,5 +71,23 @@ contains
         call assert(deltaTime .lt. 1.01d0, toString('Error in rdee_time, test_rdTimer, too slow, now is ', deltaTime))
 
     end Subroutine
+
+    subroutine perf_nowTS()
+        implicit none
+
+        real(kind=8) :: t1, ts
+        integer :: i, N = 2000000
+
+        print *, '>>>>>>>>>>>>>>>>>>>>> Start to calculate time cost for nowTS, repeating 10000 times'
+
+        t1 = rdTimer()
+        do i = 1, N
+            ts = nowTS()!  + ts / 1e9
+        end do
+        t1 = rdTimer()
+        print *, 'delta time = ', t1, ' for ', N, ' times nowTS() executions'
+        print *, toString(t1 / 2000000 * 1e9, ' ns per times')
+        
+    end subroutine
 
 End Program

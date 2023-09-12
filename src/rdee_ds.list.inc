@@ -107,7 +107,7 @@ subroutine list_print(this)
 
 end subroutine
 
-function list_getf_node(this, pos) result (rst_node)
+function list_fget_node(this, pos) result (rst_node)
     implicit none
     ! ............................ Arguments
     class(list), intent(in) :: this
@@ -117,7 +117,7 @@ function list_getf_node(this, pos) result (rst_node)
 
     call this%get(pos, rst_node)
 
-end function list_getf_node
+end function list_fget_node
 
 
 subroutine list_get_node(this, pos, inode, stat, errmsg)
@@ -205,6 +205,16 @@ subroutine list_get_int(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_int(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    integer(kind=4) :: item
+
+    call this%get(pos, item)
+end function list_fget_int
 subroutine list_get_int8(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -248,6 +258,16 @@ subroutine list_get_int8(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_int8(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    integer(kind=8) :: item
+
+    call this%get(pos, item)
+end function list_fget_int8
 subroutine list_get_intA1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -291,6 +311,16 @@ subroutine list_get_intA1d(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_intA1d(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    integer(kind=4), allocatable  :: item(:)
+
+    call this%get(pos, item)
+end function list_fget_intA1d
 subroutine list_get_int8A1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -334,6 +364,16 @@ subroutine list_get_int8A1d(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_int8A1d(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    integer(kind=8), allocatable  :: item(:)
+
+    call this%get(pos, item)
+end function list_fget_int8A1d
 subroutine list_get_float(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -377,6 +417,16 @@ subroutine list_get_float(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_float(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    real(kind=4) :: item
+
+    call this%get(pos, item)
+end function list_fget_float
 subroutine list_get_floatA1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -420,6 +470,16 @@ subroutine list_get_floatA1d(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_floatA1d(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    real(kind=4), allocatable  :: item(:)
+
+    call this%get(pos, item)
+end function list_fget_floatA1d
 subroutine list_get_double(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -463,6 +523,16 @@ subroutine list_get_double(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_double(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    real(kind=8) :: item
+
+    call this%get(pos, item)
+end function list_fget_double
 subroutine list_get_doubleA1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -506,6 +576,16 @@ subroutine list_get_doubleA1d(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_doubleA1d(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    real(kind=8), allocatable  :: item(:)
+
+    call this%get(pos, item)
+end function list_fget_doubleA1d
 subroutine list_get_logical(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -549,6 +629,16 @@ subroutine list_get_logical(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_logical(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    logical :: item
+
+    call this%get(pos, item)
+end function list_fget_logical
 subroutine list_get_logicalA1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -592,6 +682,16 @@ subroutine list_get_logicalA1d(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_logicalA1d(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    logical, allocatable  :: item(:)
+
+    call this%get(pos, item)
+end function list_fget_logicalA1d
 subroutine list_get_string(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -635,6 +735,7 @@ subroutine list_get_string(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
 subroutine list_get_stringA1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -678,6 +779,26 @@ subroutine list_get_stringA1d(this, pos, item, stat, errmsg)
 
     Return
 end subroutine
+
+function list_fget_string(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    character(len=256) :: item
+
+    call this%get(pos, item)
+end function list_fget_string
+function list_fget_stringA1d(this, pos) result(item)
+    implicit none
+    ! ................... Arguments
+    class(list), Intent(inout) :: this
+    Integer, Intent(in) :: pos  ! starts from 1, all fortran-relative index starts from 1
+    character(len=256), allocatable :: item(:)
+
+    call this%get(pos, item)
+end function list_fget_stringA1d
+
 subroutine list_append(this, item)
     implicit none
     ! ................... Arguments
