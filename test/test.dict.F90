@@ -28,12 +28,12 @@ contains
         map3 = dict(hash_mod_is)
         map4 = dict(hash_mod_is, 19)
         
-        print *, 'should be 3: ', map1%hash(3)
-        print *, 'should be 1: ', map2%hash(21)
-        print *, 'should be 8: ', map3%hash('wow')
-        print *, 'should be 13: ', map4%hash('aha')
-        call assert(map1%hash(3) .eq. 3, 'Error in rdee_ds/dict test A1')
-        call assert(map4%hash('aha') .eq. 13, 'Error in rdee_ds/dict test A1')
+        print *, 'should be 4: ', map1%hash(3)
+        print *, 'should be 2: ', map2%hash(21)
+        print *, 'should be 9: ', map3%hash('wow')
+        print *, 'should be 14: ', map4%hash('aha')
+        call assert(map1%hash(3) .eq. 4, 'Error in rdee_ds/dict test A1')
+        call assert(map4%hash('aha') .eq. 14, 'Error in rdee_ds/dict test A1')
 
         call map1%reset
         call map2%reset
@@ -66,26 +66,41 @@ contains
         call assert(all(iaa1 .eq. [2,3,4]), 'Error in rdee_dict test C1')
 
         print *, '--------- (D) now test hasKey ----------'
-        call assert(map1%hasKey(7), 'Error in rdee_dict test D1')
-        call assert(.not. map1%hasKey('aha'), 'Error in rdee_dict test D1')
+        call assert(map1%hasKey(7), 'Error in rdee_dict test D1, A1')
+        call map1%set('aha', 3)
+        call assert(map1%hasKey('aha'), 'Error in rdee_dict test D1, A2')
+        call assert(.not. map1%hasKey('aah'), 'Error in rdee_dict test D1, A3')
+
+        PRINT *, '--------- Pass test.dict.F90 => test_base ----------'
 
     end subroutine
 
     subroutine test_p2node()
         type(dict) :: map1
-        type(node), pointer :: n1
+        type(node), pointer :: n1, n2
         integer, allocatable :: ia1(:)
+
+        PRINT *, '--------- start test_p2node ----------'
 
         map1 = dict()
         call map1%set(0, [1,2,3])
+        call map1%set('aha', 'nani')
 
-        call map1%p2node(n1)
+        call map1%p2node(0, n1)
 
-        n1(1) = 999
+        call n1%print
+        call um_assign(n1%item1d(1), 999)
+
+        n2 => map1%fp2node('aha')
+        call n2%set(3.0d0)
 
         call map1%print
         call map1%get(0, ia1)
-        call assert(all(ia1 .eq. [999,2,3]), 'Error in test.dict.F90 => test_p2node')
+        call assert(all(ia1 .eq. [999,2,3]), 'Error in test.dict.F90 => test_p2node A1')
+
+        call assert(map1%fget_real8('aha') .eq. 3d0, 'Error in test.dict.F90 => test_p2node A2')
+
+        PRINT *, '--------- Pass test.dict.F90 => test_p2node ----------'
 
     end subroutine
 

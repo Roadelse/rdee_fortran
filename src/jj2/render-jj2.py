@@ -19,26 +19,29 @@ if __name__ == '__main__':
     files = glob.glob(inDir + "/*jj2")
 
     for infile in files:
+        try:
+            assert os.path.exists(infile), f'{infile} doesn''t exist'
+            file_abspath = os.path.abspath(infile)
 
-        assert os.path.exists(infile), f'{infile} doesn''t exist'
-        file_abspath = os.path.abspath(infile)
+            inDir = os.path.dirname(file_abspath)
 
-        inDir = os.path.dirname(file_abspath)
+            fbname = os.path.basename(file_abspath)
+            oName, ext = os.path.splitext(fbname)
+            oPath = outDir + "/" + oName
 
-        fbname = os.path.basename(file_abspath)
-        oName, ext = os.path.splitext(fbname)
-        oPath = outDir + "/" + oName
+            assert ext == '.jj2'
 
-        assert ext == '.jj2'
+            content = open(infile).read()
 
-        content = open(infile).read()
+            template = jj2.Template(content, line_statement_prefix=lsp)
 
-        template = jj2.Template(content, line_statement_prefix=lsp)
-
-        if ctt:
-            content2 = template.render(ctt)
-        else:
-            content2 = template.render()
-        # print(content2)
-        with open(oPath, 'w') as f:
-            f.write(content2)
+            if ctt:
+                content2 = template.render(ctt)
+            else:
+                content2 = template.render()
+            # print(content2)
+            with open(oPath, 'w') as f:
+                f.write(content2)
+        except:
+            print(f'Error in {infile}')
+            raise

@@ -28,6 +28,13 @@ SET(SRC ${CMAKE_SOURCE_DIR}/src)
 
 enable_testing()
 
+Message(STATUS "¦ compiler id = ${CMAKE_Fortran_COMPILER_ID}")
+if (${CMAKE_Fortran_COMPILER_ID} STREQUAL "Intel")
+    add_compile_options(-g -fPIE "SHELL:-check all" "SHELL:-warn all" -std08 "SHELL:-warn nounused")
+elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL "GNU")
+    add_compile_options(-g -fPIE -ffree-line-length-none -std=f2008 -Wall -fcheck=all -fall-intrinsics -Wno-unused)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(test)
 

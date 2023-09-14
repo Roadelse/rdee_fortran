@@ -17,6 +17,7 @@ Module rdee_time
       Contains
         Procedure :: start => rdProfiler_start
         Procedure :: end => rdProfiler_end
+        Procedure :: print => rdProfiler_print
     End Type
 
     interface rdProfiler
@@ -35,16 +36,16 @@ end function
 
 subroutine rdProfiler_start(this, id)
     implicit none
-    class(rdProfiler), intent(in) :: this
+    class(rdProfiler), intent(inout) :: this
     character(*), intent(in) :: id
-    type(node) :: tcl_node
+    type(node),pointer :: tcl_node
 
     if (this%tcl%hasKey(id)) then
-        call this%tcl%get(id, tcl_node)
-        if (tcl_node%item1d(3) .gt. 0) then
+        tcl_node => this%tcl%fp2node(id)
+        if (um2i4(tcl_node%item1d(3)) .gt. 0) then
             return
         end if
-        tcl_node%item1d(3) = nowTS()
+        call um_assign(tcl_node%item1d(3), nowTS())
     else
         call this%tcl%set(id, [0d0, 0d0, nowTS()])
     end if
@@ -52,20 +53,35 @@ end subroutine
 
 subroutine rdProfiler_end(this, id)
     implicit none
-    class(rdProfiler), intent(in) :: this
+    class(rdProfiler), intent(inout) :: this
     character(*), intent(in) :: id
-    type(node) :: tcl_node
+    type(node),pointer :: tcl_node
 
     if (this%tcl%hasKey(id)) then
-        call this%tcl%get(id, tcl_node)
-        tcl_node%item1d(1) = tcl_node%item1d(1) + (nowTS() - tcl_node%item1d(3))
-        tcl_node%item1d(2) = tcl_node%item1d(2) + 1
-        tcl_node%item1d(3) = 0
+        tcl_node => this%tcl%fp2node(id)
+        ! call this%tcl%set(id, [um2i8(tcl_node%item1d(1)) + nowTS() - um2i8(tcl_node%item1d(3)), um2i8(tcl_node%item1d(2)) + 1, 0d0])
+        ! tcl_node%item1d(1) = tcl_node%item1d(1) + (nowTS() - tcl_node%item1d(3))
+        ! tcl_node%item1d(2) = tcl_node%item1d(2) + 1
+        ! tcl_node%item1d(3) = 0
+        select type(v1d => tcl_node%item1d)
+            type is (real(kind=8))
+                v1d(1) = v1d(1) + (nowTS() - v1d(3))
+                v1d(2) = v1d(2) + 1
+                v1d(3) = 0d0
+        end select
     else
         print *, 'Error! missing rdProfiler%start operation'
         stop 1
     end if
 end subroutine
+
+Subroutine rdProfiler_print(this)
+    implicit none
+    class(rdProfiler), intent(inout) :: this
+
+    call this%tcl%print
+
+End Subroutine
 
 
 Function now_str() result(rst)

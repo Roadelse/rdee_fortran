@@ -162,7 +162,7 @@ subroutine list_get_node(this, pos, inode, stat, errmsg)
 
 end subroutine list_get_node
 
-!#jj2 for type in ['int', 'int8', 'intA1d', 'int8A1d', 'float', 'floatA1d', 'double', 'doubleA1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
+!#jj2 for type in ['int', 'int8', 'intA1d', 'int8A1d', 'real4', 'real4A1d', 'real8', 'real8A1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
 subroutine list_get_{{ type }}(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -733,7 +733,7 @@ Subroutine list_extend(this, L)
 End Subroutine list_extend
 
 
-!#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+!#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
 Subroutine list_toArray_{{ type }}(this, arr)
     implicit none
     !.................................. Arguments

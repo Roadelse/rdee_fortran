@@ -1,0 +1,204 @@
+Module rdee_um
+    Implicit none
+
+Contains
+    Subroutine fum_print(um)
+        implicit none
+        ! ............................. Argument
+        class(*), intent(in) :: um
+        ! ............................. main body
+        Select Type (ump => um)
+            !#jj2 for type in ['int4', 'int8', 'real4', 'real8']:
+            type is ({{ ftype[type] }})
+                print *, ump
+            !#jj2 endfor
+            class default
+                return
+        end select
+    end subroutine
+
+    Function um2i4(um) result(rst)
+        implicit none
+        ! ............................. Arguments & return variable
+        class(*), intent(in) :: um
+        integer(kind=4) :: rst
+        ! ............................. Main body
+        select type (ump => um)
+            type is (integer(kind=4))
+                rst = ump
+            type is (integer(kind=8))
+                rst = int(ump, 4)
+            type is (real(kind=4))
+                rst = int(ump, 4)
+            type is (real(kind=8))
+                rst = int(ump, 4)
+            class default
+                print *, 'Error! um is not a number'
+                stop 2
+        end select
+    End Function
+
+    Function um2i8(um) result(rst)
+        implicit none
+        ! ............................. Arguments & return variable
+        class(*), intent(in) :: um
+        integer(kind=4) :: rst
+        ! ............................. Main body
+        select type (ump => um)
+            type is (integer(kind=4))
+                rst = int(ump, 8)
+            type is (integer(kind=8))
+                rst = ump
+            type is (real(kind=4))
+                rst = int(ump, 8)
+            type is (real(kind=8))
+                rst = int(ump, 8)
+            class default
+                print *, 'Error! um is not a number'
+                stop 2
+        end select
+    End Function
+    Function um2r4(um) result(rst)
+        implicit none
+        ! ............................. Arguments & return variable
+        class(*), intent(in) :: um
+        real(kind=4) :: rst
+        ! ............................. Main body
+        select type (ump => um)
+            type is (integer(kind=4))
+                rst = real(ump, 4)
+            type is (integer(kind=8))
+                rst = real(ump, 4)
+            type is (real(kind=4))
+                rst = ump
+            type is (real(kind=8))
+                rst = real(ump, 4)
+            class default
+                print *, 'Error! um is not a number'
+                stop 2
+        end select
+    End Function
+    Function um2r8(um) result(rst)
+        implicit none
+        ! ............................. Arguments & return variable
+        class(*), intent(in) :: um
+        real(kind=8) :: rst
+        ! ............................. Main body
+        select type (ump => um)
+            type is (integer(kind=4))
+                rst = real(ump, 8)
+            type is (integer(kind=8))
+                rst = real(ump, 8)
+            type is (real(kind=4))
+                rst = real(ump, 8)
+            type is (real(kind=8))
+                rst = ump
+            class default
+                print *, 'Error! um is not a number'
+                stop 2
+        end select
+    End Function
+    
+    Subroutine um_assign(um, v)
+        implicit none
+        ! ............................. Argument
+        class(*), intent(inout) :: um
+        class(*), intent(in) :: v
+        ! ............................. main body
+        Select type(ump => um)
+            !#jj2 for type in ['int4', 'int8', 'real4', 'real8']:
+            type is ({{ ftype[type] }})
+                select type(vp => v)
+                    !#jj2 for type2 in ['int4', 'int8', 'real4', 'real8']:
+                    type is ({{ ftype[type2] }})
+                        ump = vp
+                    !#jj2 endfor
+                    class default
+                        print *, 'Error! unmatched data types for um and v'
+                        stop 1
+                end select
+            !#jj2 endfor
+            class default
+                print *, 'Error! Unknown data type for um'
+                stop 1
+        end select
+    End Subroutine
+
+
+
+    elemental integer function eq_um(x, y) result(rst)
+        implicit none
+        ! ··················· Arguments
+        class(*), intent(in) :: x, y
+
+        select type(xp => x)
+            !#jj2 for type in ['integer(kind=4)', 'integer(kind=8)', 'real(kind=4)', 'real(kind=8)', 'logical', 'character(*)']:
+            !#jj2 set eq_sym = '.eqv.' if type.startswith('logical') else '.eq.'
+            type is ({{ type }})
+                select type(yp => y)
+                    type is ({{ type }})
+                        rst = 0
+                        if (xp {{ eq_sym }} yp) rst = 1
+                    class default
+                        rst = -1
+                end select
+            !#jj2 endfor
+            class default
+                rst = -2
+        end select
+        return
+    end function
+
+    
+    integer function eq_1d_um(x, y) result(rst)
+        implicit none
+        ! ··················· Arguments
+        class(*), intent(in) :: x(:), y(:)
+
+        select type(xp => x)
+            !#jj2 for type in ['integer(kind=4)', 'integer(kind=8)', 'real(kind=4)', 'real(kind=8)', 'logical', 'character(*)']:
+            !#jj2 set eq_sym = '.eqv.' if type.startswith('logical') else '.eq.'
+            type is ({{ type }})
+                select type(yp => y)
+                    type is ({{ type }})
+                        rst = 0
+                        if (all(xp {{ eq_sym }} yp)) rst = 1
+                    class default
+                        rst = -1
+                end select
+            !#jj2 endfor
+            class default
+                rst = -2
+        end select
+        return
+    end function
+
+    !#jj2 for opn in ['add', 'sub', 'mul', 'div']:
+    !#jj2 set op = '+' if opn == 'add' else '-' if opn == 'sub' else '*' if opn == 'mul' else '/'
+    function fum_{{ opn }}(um1, um2) result(rst)
+        implicit none
+        ! ··················· Arguments
+        class(*), intent(in) :: um1, um2
+        class(*),allocatable :: rst
+        ! ··················· main body
+        Select type(up1 => um1)
+            !#jj2 for type in ['int4', 'int8', 'real4', 'real8']:
+            type is ({{ ftype[type] }})
+                select type(up2 => um2)
+                    !#jj2 for type2 in ['int4', 'int8', 'real4', 'real8']:
+                    type is ({{ ftype[type2] }})
+                        rst = up1 {{ op }} up2
+                    !#jj2 endfor
+                    class default
+                        print *, 'Error! unmatched data types for um1 and um2'
+                        stop 1
+                end select
+            !#jj2 endfor
+            class default
+                print *, 'Error! Unknown data type for um1'
+                stop 1
+        end select
+    end function
+    !#jj2 endfor
+
+End Module

@@ -253,7 +253,17 @@ Function dict_hasKey(this, k) result(rst)
         rst = .False.
         return
     end if
-    rst = .True.
+
+    p => listTar%head
+    do while (associated(p))
+        if (p%hasKey(k)) then
+            rst = .true.
+            return
+        end if
+        p => p%next
+    end do
+
+    rst = .False.
     return
 End Function dict_hasKey
 
@@ -265,7 +275,6 @@ subroutine dict_p2node(this, k, np)
     class(*), intent(in) :: k
     type(node), pointer, intent(inout) :: np
     ! ............................ local variable
-    type(node), pointer :: p
     type(list) :: listTar
     integer :: hashVal
     ! ............................ main body
@@ -277,11 +286,37 @@ subroutine dict_p2node(this, k, np)
         if (np%hasKey(k)) then
             return
         end if
-        p => p%next
+        np => np%next
     end do
 
     return
-End Subroutine
+End Subroutine dict_p2node
+
+
+function dict_fp2node(this, k) result(np)
+    implicit none
+    ! ............................ Argument
+    class(dict), intent(in) :: this
+    class(*), intent(in) :: k
+    type(node), pointer :: np
+    ! ............................ local variable
+    type(list) :: listTar
+    integer :: hashVal
+    ! ............................ main body
+    hashVal = this%hash(k)
+    listTar = this%lists(hashVal)
+    np => listTar%head
+    
+    do while (associated(np))
+        if (np%hasKey(k)) then
+            return
+        end if
+        np => np%next
+    end do
+
+    return
+End Function dict_fp2node
+
 
 subroutine dict_get(this, k, v)
     implicit none
@@ -409,7 +444,7 @@ Function dict_fget_int8(this, k) result(v)
 
     call this%get(k, v)
 End Function dict_fget_int8
-Subroutine dict_get1d_float(this, k, v1d)
+Subroutine dict_get1d_real4(this, k, v1d)
     implicit none
     ! ............................ Argument
     class(dict), intent(in) :: this
@@ -435,18 +470,18 @@ Subroutine dict_get1d_float(this, k, v1d)
 
     stop 'Error in rdee_ds/dict/get, cannot find target key'
 
-End Subroutine dict_get1d_float
+End Subroutine dict_get1d_real4
 
-Function dict_fget1d_float(this, k) result(v1d)
+Function dict_fget1d_real4(this, k) result(v1d)
     implicit none
     ! ............................ Argument & return variable
     class(dict), intent(in) :: this
     class(*), intent(in) :: k
     real(kind=4), allocatable :: v1d(:)
     call this%get(k, v1d)
-End Function dict_fget1d_float
+End Function dict_fget1d_real4
 
-Function dict_fget_float(this, k) result(v)
+Function dict_fget_real4(this, k) result(v)
     implicit none
     ! ............................ Argument & return variable
     class(dict), intent(in) :: this
@@ -454,8 +489,8 @@ Function dict_fget_float(this, k) result(v)
     real(kind=4) :: v
 
     call this%get(k, v)
-End Function dict_fget_float
-Subroutine dict_get1d_double(this, k, v1d)
+End Function dict_fget_real4
+Subroutine dict_get1d_real8(this, k, v1d)
     implicit none
     ! ............................ Argument
     class(dict), intent(in) :: this
@@ -481,18 +516,18 @@ Subroutine dict_get1d_double(this, k, v1d)
 
     stop 'Error in rdee_ds/dict/get, cannot find target key'
 
-End Subroutine dict_get1d_double
+End Subroutine dict_get1d_real8
 
-Function dict_fget1d_double(this, k) result(v1d)
+Function dict_fget1d_real8(this, k) result(v1d)
     implicit none
     ! ............................ Argument & return variable
     class(dict), intent(in) :: this
     class(*), intent(in) :: k
     real(kind=8), allocatable :: v1d(:)
     call this%get(k, v1d)
-End Function dict_fget1d_double
+End Function dict_fget1d_real8
 
-Function dict_fget_double(this, k) result(v)
+Function dict_fget_real8(this, k) result(v)
     implicit none
     ! ............................ Argument & return variable
     class(dict), intent(in) :: this
@@ -500,7 +535,7 @@ Function dict_fget_double(this, k) result(v)
     real(kind=8) :: v
 
     call this%get(k, v)
-End Function dict_fget_double
+End Function dict_fget_real8
 Subroutine dict_get1d_logical(this, k, v1d)
     implicit none
     ! ............................ Argument

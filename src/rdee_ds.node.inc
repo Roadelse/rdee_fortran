@@ -474,7 +474,7 @@ function node_fget_item_int8(this) result(v)
 
     call this%get(v)
 end function node_fget_item_int8
-subroutine node_get_item1d_float(this, item, stat, errmsg)
+subroutine node_get_item1d_real4(this, item, stat, errmsg)
     implicit none
 
     class(node), intent(in) :: this
@@ -503,15 +503,15 @@ subroutine node_get_item1d_float(this, item, stat, errmsg)
                 case (0)
                     errmsg = ''
                 case default
-                    errmsg = 'Error in rdee_ds/node/get_item1d_float'
+                    errmsg = 'Error in rdee_ds/node/get_item1d_real4'
             end select        
         end if
     elseif (istat .ne. 0) then
-        stop 'Error in rdee_ds/node/get_item1d_float'
+        stop 'Error in rdee_ds/node/get_item1d_real4'
     end if
 end subroutine
 
-function node_fget_item1d_float(this) result(v1d)
+function node_fget_item1d_real4(this) result(v1d)
     implicit none
 
     class(node), intent(in) :: this
@@ -520,8 +520,8 @@ function node_fget_item1d_float(this) result(v1d)
     integer :: istat
 
     call this%get(v1d)
-end function node_fget_item1d_float
-function node_fget_item_float(this) result(v)
+end function node_fget_item1d_real4
+function node_fget_item_real4(this) result(v)
     implicit none
 
     class(node), intent(in) :: this
@@ -530,8 +530,8 @@ function node_fget_item_float(this) result(v)
     integer :: istat
 
     call this%get(v)
-end function node_fget_item_float
-subroutine node_get_item1d_double(this, item, stat, errmsg)
+end function node_fget_item_real4
+subroutine node_get_item1d_real8(this, item, stat, errmsg)
     implicit none
 
     class(node), intent(in) :: this
@@ -560,15 +560,15 @@ subroutine node_get_item1d_double(this, item, stat, errmsg)
                 case (0)
                     errmsg = ''
                 case default
-                    errmsg = 'Error in rdee_ds/node/get_item1d_double'
+                    errmsg = 'Error in rdee_ds/node/get_item1d_real8'
             end select        
         end if
     elseif (istat .ne. 0) then
-        stop 'Error in rdee_ds/node/get_item1d_double'
+        stop 'Error in rdee_ds/node/get_item1d_real8'
     end if
 end subroutine
 
-function node_fget_item1d_double(this) result(v1d)
+function node_fget_item1d_real8(this) result(v1d)
     implicit none
 
     class(node), intent(in) :: this
@@ -577,8 +577,8 @@ function node_fget_item1d_double(this) result(v1d)
     integer :: istat
 
     call this%get(v1d)
-end function node_fget_item1d_double
-function node_fget_item_double(this) result(v)
+end function node_fget_item1d_real8
+function node_fget_item_real8(this) result(v)
     implicit none
 
     class(node), intent(in) :: this
@@ -587,7 +587,7 @@ function node_fget_item_double(this) result(v)
     integer :: istat
 
     call this%get(v)
-end function node_fget_item_double
+end function node_fget_item_real8
 subroutine node_get_item1d_logical(this, item, stat, errmsg)
     implicit none
 

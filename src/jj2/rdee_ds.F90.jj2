@@ -2,6 +2,7 @@ Module rdee_ds
     ! This module contains implement of generic linked list in Fortran
     Use rdee_base
     Use rdee_algo
+    Use rdee_um
 
     ! Private
 
@@ -23,12 +24,12 @@ Module rdee_ds
         Procedure :: print => node_print
       
         procedure ::node_get_item
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
         Procedure :: node_get_item1d_{{ type }}, fget1d_{{ type }} => node_fget_item1d_{{ type }}, fget_{{ type }} => node_fget_item_{{ type }}
         !#jj2 endfor
 
         Generic :: get => node_get_item, &
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
             node_get_item1d_{{ type }}{{ ', &' if not loop.last }}
         !#jj2 endfor
 
@@ -49,18 +50,18 @@ Module rdee_ds
         Procedure :: print => list_print
         Procedure :: reset => list_reset
 
-        !#jj2 for type in ['node', 'int', 'int8', 'intA1d', 'int8A1d', 'float', 'floatA1d', 'double', 'doubleA1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
+        !#jj2 for type in ['node', 'int', 'int8', 'intA1d', 'int8A1d', 'real4', 'real4A1d', 'real8', 'real8A1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
         Procedure :: list_get_{{ type }}
         !#jj2 endfor
         Generic :: get => &
-        !#jj2 for type in ['node', 'int', 'int8', 'intA1d', 'int8A1d', 'float', 'floatA1d', 'double', 'doubleA1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
+        !#jj2 for type in ['node', 'int', 'int8', 'intA1d', 'int8A1d', 'real4', 'real4A1d', 'real8', 'real8A1d', 'logical', 'logicalA1d', 'string', 'stringA1d']:
             list_get_{{ type }}{{ ',&' if not loop.last }}
         !#jj2 endfor
 
-        !#jj2 for type in ['node', 'int', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['node', 'int', 'int8', 'real4', 'real8', 'logical', 'string']:
         Procedure :: fget_{{type}} => list_fget_{{ type }}
         !#jj2 endfor
-        !#jj2 for type in ['int', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int', 'int8', 'real4', 'real8', 'logical', 'string']:
         Procedure :: fget1d_{{type}} => list_fget_{{ type }}A1d
         !#jj2 endfor
 
@@ -84,11 +85,11 @@ Module rdee_ds
         Procedure :: keys => list_keys
         Procedure :: extend => list_extend
 
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
         Procedure :: list_toArray_{{ type }}
         !#jj2 endfor
         Generic :: toArray => &
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
             list_toArray_{{ type }}{{ ',&' if not loop.last }}
         !#jj2 endfor
 
@@ -103,15 +104,15 @@ Module rdee_ds
       Contains
         final :: dict_destructor
         Procedure :: dict_get
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
         Procedure :: dict_get1d_{{ type }}
         !#jj2 endfor
         Generic :: get => dict_get, &
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
             dict_get1d_{{ type }}{{ ',&' if not loop.last }}
         !#jj2 endfor
 
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
         Procedure :: fget1d_{{ type }} => dict_fget1d_{{ type }}
         Procedure :: fget_{{ type }} => dict_fget_{{ type }}
         !#jj2 endfor
@@ -128,6 +129,7 @@ Module rdee_ds
         Procedure :: update => dict_update
         Procedure :: hasKey => dict_hasKey
         Procedure :: p2node => dict_p2node
+        Procedure :: fp2node => dict_fp2node
     End Type
 
     abstract Interface

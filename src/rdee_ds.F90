@@ -2,6 +2,7 @@ Module rdee_ds
     ! This module contains implement of generic linked list in Fortran
     Use rdee_base
     Use rdee_algo
+    Use rdee_um
 
     ! Private
 
@@ -25,15 +26,15 @@ Module rdee_ds
         procedure ::node_get_item
         Procedure :: node_get_item1d_int4, fget1d_int4 => node_fget_item1d_int4, fget_int4 => node_fget_item_int4
         Procedure :: node_get_item1d_int8, fget1d_int8 => node_fget_item1d_int8, fget_int8 => node_fget_item_int8
-        Procedure :: node_get_item1d_float, fget1d_float => node_fget_item1d_float, fget_float => node_fget_item_float
-        Procedure :: node_get_item1d_double, fget1d_double => node_fget_item1d_double, fget_double => node_fget_item_double
+        Procedure :: node_get_item1d_real4, fget1d_real4 => node_fget_item1d_real4, fget_real4 => node_fget_item_real4
+        Procedure :: node_get_item1d_real8, fget1d_real8 => node_fget_item1d_real8, fget_real8 => node_fget_item_real8
         Procedure :: node_get_item1d_logical, fget1d_logical => node_fget_item1d_logical, fget_logical => node_fget_item_logical
         Procedure :: node_get_item1d_string, fget1d_string => node_fget_item1d_string, fget_string => node_fget_item_string
         Generic :: get => node_get_item, &
             node_get_item1d_int4, &
             node_get_item1d_int8, &
-            node_get_item1d_float, &
-            node_get_item1d_double, &
+            node_get_item1d_real4, &
+            node_get_item1d_real8, &
             node_get_item1d_logical, &
             node_get_item1d_string
         Procedure :: node_set_v, node_set_v1d, node_set_k_v, node_set_k_v1d
@@ -58,10 +59,10 @@ Module rdee_ds
         Procedure :: list_get_int8
         Procedure :: list_get_intA1d
         Procedure :: list_get_int8A1d
-        Procedure :: list_get_float
-        Procedure :: list_get_floatA1d
-        Procedure :: list_get_double
-        Procedure :: list_get_doubleA1d
+        Procedure :: list_get_real4
+        Procedure :: list_get_real4A1d
+        Procedure :: list_get_real8
+        Procedure :: list_get_real8A1d
         Procedure :: list_get_logical
         Procedure :: list_get_logicalA1d
         Procedure :: list_get_string
@@ -72,10 +73,10 @@ Module rdee_ds
             list_get_int8,&
             list_get_intA1d,&
             list_get_int8A1d,&
-            list_get_float,&
-            list_get_floatA1d,&
-            list_get_double,&
-            list_get_doubleA1d,&
+            list_get_real4,&
+            list_get_real4A1d,&
+            list_get_real8,&
+            list_get_real8A1d,&
             list_get_logical,&
             list_get_logicalA1d,&
             list_get_string,&
@@ -83,14 +84,14 @@ Module rdee_ds
         Procedure :: fget_node => list_fget_node
         Procedure :: fget_int => list_fget_int
         Procedure :: fget_int8 => list_fget_int8
-        Procedure :: fget_float => list_fget_float
-        Procedure :: fget_double => list_fget_double
+        Procedure :: fget_real4 => list_fget_real4
+        Procedure :: fget_real8 => list_fget_real8
         Procedure :: fget_logical => list_fget_logical
         Procedure :: fget_string => list_fget_string
         Procedure :: fget1d_int => list_fget_intA1d
         Procedure :: fget1d_int8 => list_fget_int8A1d
-        Procedure :: fget1d_float => list_fget_floatA1d
-        Procedure :: fget1d_double => list_fget_doubleA1d
+        Procedure :: fget1d_real4 => list_fget_real4A1d
+        Procedure :: fget1d_real8 => list_fget_real8A1d
         Procedure :: fget1d_logical => list_fget_logicalA1d
         Procedure :: fget1d_string => list_fget_stringA1d
         Procedure :: list_append, list_append_a1d
@@ -113,15 +114,15 @@ Module rdee_ds
 
         Procedure :: list_toArray_int4
         Procedure :: list_toArray_int8
-        Procedure :: list_toArray_float
-        Procedure :: list_toArray_double
+        Procedure :: list_toArray_real4
+        Procedure :: list_toArray_real8
         Procedure :: list_toArray_logical
         Procedure :: list_toArray_string
         Generic :: toArray => &
             list_toArray_int4,&
             list_toArray_int8,&
-            list_toArray_float,&
-            list_toArray_double,&
+            list_toArray_real4,&
+            list_toArray_real8,&
             list_toArray_logical,&
             list_toArray_string
         Procedure :: reverse => list_reverse
@@ -137,25 +138,25 @@ Module rdee_ds
         Procedure :: dict_get
         Procedure :: dict_get1d_int4
         Procedure :: dict_get1d_int8
-        Procedure :: dict_get1d_float
-        Procedure :: dict_get1d_double
+        Procedure :: dict_get1d_real4
+        Procedure :: dict_get1d_real8
         Procedure :: dict_get1d_logical
         Procedure :: dict_get1d_string
         Generic :: get => dict_get, &
             dict_get1d_int4,&
             dict_get1d_int8,&
-            dict_get1d_float,&
-            dict_get1d_double,&
+            dict_get1d_real4,&
+            dict_get1d_real8,&
             dict_get1d_logical,&
             dict_get1d_string
         Procedure :: fget1d_int4 => dict_fget1d_int4
         Procedure :: fget_int4 => dict_fget_int4
         Procedure :: fget1d_int8 => dict_fget1d_int8
         Procedure :: fget_int8 => dict_fget_int8
-        Procedure :: fget1d_float => dict_fget1d_float
-        Procedure :: fget_float => dict_fget_float
-        Procedure :: fget1d_double => dict_fget1d_double
-        Procedure :: fget_double => dict_fget_double
+        Procedure :: fget1d_real4 => dict_fget1d_real4
+        Procedure :: fget_real4 => dict_fget_real4
+        Procedure :: fget1d_real8 => dict_fget1d_real8
+        Procedure :: fget_real8 => dict_fget_real8
         Procedure :: fget1d_logical => dict_fget1d_logical
         Procedure :: fget_logical => dict_fget_logical
         Procedure :: fget1d_string => dict_fget1d_string
@@ -170,6 +171,7 @@ Module rdee_ds
         Procedure :: update => dict_update
         Procedure :: hasKey => dict_hasKey
         Procedure :: p2node => dict_p2node
+        Procedure :: fp2node => dict_fp2node
     End Type
 
     abstract Interface

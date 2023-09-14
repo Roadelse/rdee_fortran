@@ -26,7 +26,7 @@ Function hash_mod_i(key, size) result(rst_i)
     ! ............................ return variable
     integer :: rst_i
 
-    rst_i = mod(key, size)
+    rst_i = mod(key, size) + 1
 
 end Function
      
@@ -47,6 +47,6 @@ Function hash_mod_s(key, size) result(rst_i)
     end do
     keySum = SUM(ICHAR(tmp))
 
-    rst_i = mod(keySum, size)
+    rst_i = mod(keySum, size) + 1
 
 end Function

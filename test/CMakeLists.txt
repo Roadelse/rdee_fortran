@@ -20,6 +20,7 @@ function(ecsl_test testID)  # encapsulation of test
 
 endfunction()
 
+ecsl_test(um)
 ecsl_test(node)
 ecsl_test(list)
 ecsl_test(dict)

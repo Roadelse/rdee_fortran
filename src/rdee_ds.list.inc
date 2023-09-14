@@ -374,7 +374,7 @@ function list_fget_int8A1d(this, pos) result(item)
 
     call this%get(pos, item)
 end function list_fget_int8A1d
-subroutine list_get_float(this, pos, item, stat, errmsg)
+subroutine list_get_real4(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -418,7 +418,7 @@ subroutine list_get_float(this, pos, item, stat, errmsg)
     Return
 end subroutine
 
-function list_fget_float(this, pos) result(item)
+function list_fget_real4(this, pos) result(item)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -426,8 +426,8 @@ function list_fget_float(this, pos) result(item)
     real(kind=4) :: item
 
     call this%get(pos, item)
-end function list_fget_float
-subroutine list_get_floatA1d(this, pos, item, stat, errmsg)
+end function list_fget_real4
+subroutine list_get_real4A1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -471,7 +471,7 @@ subroutine list_get_floatA1d(this, pos, item, stat, errmsg)
     Return
 end subroutine
 
-function list_fget_floatA1d(this, pos) result(item)
+function list_fget_real4A1d(this, pos) result(item)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -479,8 +479,8 @@ function list_fget_floatA1d(this, pos) result(item)
     real(kind=4), allocatable  :: item(:)
 
     call this%get(pos, item)
-end function list_fget_floatA1d
-subroutine list_get_double(this, pos, item, stat, errmsg)
+end function list_fget_real4A1d
+subroutine list_get_real8(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -524,7 +524,7 @@ subroutine list_get_double(this, pos, item, stat, errmsg)
     Return
 end subroutine
 
-function list_fget_double(this, pos) result(item)
+function list_fget_real8(this, pos) result(item)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -532,8 +532,8 @@ function list_fget_double(this, pos) result(item)
     real(kind=8) :: item
 
     call this%get(pos, item)
-end function list_fget_double
-subroutine list_get_doubleA1d(this, pos, item, stat, errmsg)
+end function list_fget_real8
+subroutine list_get_real8A1d(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -577,7 +577,7 @@ subroutine list_get_doubleA1d(this, pos, item, stat, errmsg)
     Return
 end subroutine
 
-function list_fget_doubleA1d(this, pos) result(item)
+function list_fget_real8A1d(this, pos) result(item)
     implicit none
     ! ................... Arguments
     class(list), Intent(inout) :: this
@@ -585,7 +585,7 @@ function list_fget_doubleA1d(this, pos) result(item)
     real(kind=8), allocatable  :: item(:)
 
     call this%get(pos, item)
-end function list_fget_doubleA1d
+end function list_fget_real8A1d
 subroutine list_get_logical(this, pos, item, stat, errmsg)
     implicit none
     ! ................... Arguments
@@ -1323,7 +1323,7 @@ Subroutine list_toArray_int8(this, arr)
     end do
 
 end subroutine list_toArray_int8
-Subroutine list_toArray_float(this, arr)
+Subroutine list_toArray_real4(this, arr)
     implicit none
     !.................................. Arguments
     class(list), intent(inout) :: this
@@ -1337,8 +1337,8 @@ Subroutine list_toArray_float(this, arr)
         call this%get(i, arr(i))
     end do
 
-end subroutine list_toArray_float
-Subroutine list_toArray_double(this, arr)
+end subroutine list_toArray_real4
+Subroutine list_toArray_real8(this, arr)
     implicit none
     !.................................. Arguments
     class(list), intent(inout) :: this
@@ -1352,7 +1352,7 @@ Subroutine list_toArray_double(this, arr)
         call this%get(i, arr(i))
     end do
 
-end subroutine list_toArray_double
+end subroutine list_toArray_real8
 Subroutine list_toArray_logical(this, arr)
     implicit none
     !.................................. Arguments

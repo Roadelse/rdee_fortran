@@ -213,7 +213,7 @@ subroutine node_get_item(this, item, stat, errmsg)
 
     if (allocated(this%item)) then
         select type (v => item)
-            !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+            !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
             type is ({{ ftype[type] }})
                 select type (v2 => this%item)
                     type is ({{ ftype[type] }})
@@ -287,7 +287,7 @@ end subroutine node_get_item
 ! end subroutine
 
 
-!#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+!#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
 subroutine node_get_item1d_{{ type }}(this, item, stat, errmsg)
     implicit none
 
@@ -462,7 +462,7 @@ subroutine node_getKey(this, key, stat, errmsg)
     istat = 0
     if (allocated(this%key)) then
         select type(k => key)
-            !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+            !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
             type is ({{ ftype[type] }})
                 select type(k2 => this%key)
                     type is ({{ ftype[type] }})
@@ -514,7 +514,7 @@ function node_hasKey(this, key) result(rst_b)
     end if
 
     select type (k => key)
-        !#jj2 for type in ['int4', 'int8', 'float', 'double', 'logical', 'string']:
+        !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
         !#jj2 set eq_sym = '.eqv.' if type.startswith('logical') else '.eq.'
         type is ({{ ftype[type] }})
             select type (k2 => this%key)
