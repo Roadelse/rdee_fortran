@@ -14,7 +14,11 @@ Module rdee_time
     Type :: rdProfiler
         private
         type(dict) :: tcl  ! key : [total-time, count, last-time(reset to 0 after one pair of ticks)], do not forget recursive & elemental procedures?
-      Contains
+        type(dict) :: keyInc
+        type(list) :: keyStack
+        logical :: render_inc
+        type(dict) :: visited
+        Contains
         Procedure :: start => rdProfiler_start
         Procedure :: end => rdProfiler_end
         Procedure :: print => rdProfiler_print
@@ -26,11 +30,19 @@ Module rdee_time
 
 Contains
 
-function rdProfiler_constructor() result(inst)
+function rdProfiler_constructor(render_inc) result(inst)
     implicit none
+    logical, intent(in), optional :: render_inc
     type(rdProfiler) :: inst
+    logical :: render_inc_
+
+    render_inc_ = .true.
+    if (present(render_inc)) then
+        render_inc_ = render_inc
+    end if
 
     inst%tcl = dict()
+    inst%render_inc = render_inc_
 
 end function
 
@@ -48,6 +60,13 @@ subroutine rdProfiler_start(this, id)
         call um_assign(tcl_node%item1d(3), nowTS())
     else
         call this%tcl%set(id, [0d0, 0d0, nowTS()])
+    end if
+    if (this%render_inc .and. .not. this%visited%hasKey(id)) then
+        call this%visited%set(id, 1)
+        if (keyStack%size .gt. 0) then
+            call keyInc.set(keyStack%last%fget(), id)
+        end if
+        call keyStack%append(id)
     end if
 end subroutine
 
@@ -72,6 +91,10 @@ subroutine rdProfiler_end(this, id)
     else
         print *, 'Error! missing rdProfiler%start operation'
         stop 1
+    end if
+
+    if () then
+        call keyStack%popLast()
     end if
 end subroutine
 

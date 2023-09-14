@@ -77,6 +77,9 @@ Module rdee_ds
         Procedure :: list_delete_by_value, list_delete_by_value_a1d
         Generic :: del => list_delete_by_value, list_delete_by_value_a1d
         Procedure :: pop => list_delete_by_pos
+        Procedure :: popLast => list_delete_last
+        Procedure :: popFirst => list_delete_first
+
 
         Procedure :: list_index, list_index_a1d
         Generic :: index => list_index, list_index_a1d

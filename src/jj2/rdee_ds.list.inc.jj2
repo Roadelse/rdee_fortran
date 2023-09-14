@@ -642,6 +642,31 @@ Subroutine list_delete_by_pos(this, pos, pop_node, stat, errmsg)
 
 End Subroutine
 
+Subroutine list_delete_first(this)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    ! ............................ local variables
+    type(node), pointer :: p
+    ! ............................ main body
+    p => this%head
+    this%head => p%next
+    this%head%prev => null()
+    deallocate(p)
+End Subroutine
+Subroutine list_delete_last(this)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    ! ............................ local variables
+    type(node), pointer :: p
+    ! ............................ main body
+    p => this%tail
+    this%tail => p%prev
+    this%tail%next => null()
+    deallocate(p)
+End Subroutine
+
 Function list_index(this, val) result(rst_ind)
     implicit none
     ! ............................ Arguments
