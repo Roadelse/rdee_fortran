@@ -104,10 +104,13 @@ Module rdee_ds
         Procedure :: list_delete_by_value, list_delete_by_value_a1d
         Generic :: del => list_delete_by_value, list_delete_by_value_a1d
         Procedure :: pop => list_delete_by_pos
+        Procedure :: popLast => list_delete_last
+        Procedure :: popFirst => list_delete_first
+        Procedure :: popKey => list_delete_by_key
 
         Procedure :: list_index, list_index_a1d
         Generic :: index => list_index, list_index_a1d
-        Procedure :: popKey => list_delete_by_key
+        Procedure :: has => list_has
 
         Procedure :: keys => list_keys
         Procedure :: extend => list_extend
@@ -168,8 +171,10 @@ Module rdee_ds
         Procedure :: reset => dict_reset
         Procedure :: print => dict_print
         Procedure :: keys => dict_keys
+
         Procedure :: update => dict_update
         Procedure :: hasKey => dict_hasKey
+
         Procedure :: p2node => dict_p2node
         Procedure :: fp2node => dict_fp2node
     End Type

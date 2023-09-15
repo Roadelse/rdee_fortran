@@ -79,11 +79,11 @@ Module rdee_ds
         Procedure :: pop => list_delete_by_pos
         Procedure :: popLast => list_delete_last
         Procedure :: popFirst => list_delete_first
-
+        Procedure :: popKey => list_delete_by_key
 
         Procedure :: list_index, list_index_a1d
         Generic :: index => list_index, list_index_a1d
-        Procedure :: popKey => list_delete_by_key
+        Procedure :: has => list_has
 
         Procedure :: keys => list_keys
         Procedure :: extend => list_extend
@@ -121,7 +121,6 @@ Module rdee_ds
         !#jj2 endfor
 
 
-
         Procedure :: dict_set, dict_set_a1d, dict_set_node
         Generic :: set => dict_set, dict_set_a1d, dict_set_node
         Procedure :: del => dict_del
@@ -129,8 +128,10 @@ Module rdee_ds
         Procedure :: reset => dict_reset
         Procedure :: print => dict_print
         Procedure :: keys => dict_keys
+
         Procedure :: update => dict_update
         Procedure :: hasKey => dict_hasKey
+
         Procedure :: p2node => dict_p2node
         Procedure :: fp2node => dict_fp2node
     End Type

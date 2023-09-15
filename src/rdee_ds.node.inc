@@ -696,11 +696,13 @@ function node_fget_item_string(this) result(v)
     implicit none
 
     class(node), intent(in) :: this
-    character(len=256) :: v
+    character(len=:),allocatable :: v
+    character(len=256) :: v_
 
     integer :: istat
 
-    call this%get(v)
+    call this%get(v_)
+    v = trim(v_)
 end function node_fget_item_string
 
 

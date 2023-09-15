@@ -1,6 +1,8 @@
 
 include(rdee.checksys)
 
+set_source_files_properties(test.array.F90 PROPERTIES COMPILE_OPTIONS -Wno-maybe-uninitialized)
+
 function(ecsl_test testID)  # encapsulation of test
     add_executable(test.${testID} test.${testID}.F90)
     target_link_libraries(test.${testID} rdee_fortran)

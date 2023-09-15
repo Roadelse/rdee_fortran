@@ -46,7 +46,7 @@ Contains
         implicit none
         ! ............................. Arguments & return variable
         class(*), intent(in) :: um
-        integer(kind=4) :: rst
+        integer(kind=8) :: rst
         ! ............................. Main body
         select type (ump => um)
             type is (integer(kind=4))
@@ -99,6 +99,20 @@ Contains
                 rst = ump
             class default
                 print *, 'Error! um is not a number'
+                stop 2
+        end select
+    End Function
+    Function um2s(um) result(rst)
+        implicit none
+        ! ............................. Arguments & return variable
+        class(*), intent(in) :: um
+        character(len=:), allocatable :: rst
+        ! ............................. Main body
+        select type (ump => um)
+            type is (character(*))
+                rst = ump
+            class default
+                print *, 'Error! um is not a string'
                 stop 2
         end select
     End Function

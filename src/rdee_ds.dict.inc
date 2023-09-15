@@ -107,7 +107,9 @@ function dict_keys(this) result(rstL)
     if (this%size .eq. 0) return
 
     do i = 1, this%size
-        call rstL%extend(this%lists(i)%keys())
+        if (this%lists(i)%size .gt. 0) then
+            call rstL%extend(this%lists(i)%keys())
+        end if
     end do
 end function
 
@@ -647,4 +649,3 @@ subroutine dict_del(this, k)
     call listTar%popKey(k)
 End Subroutine
 
-! End Subroutine

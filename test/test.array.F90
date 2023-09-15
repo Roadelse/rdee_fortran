@@ -82,7 +82,7 @@ Contains
         integer(kind=4), allocatable :: iaa1(:)
 
 
-        iaa1 = union_arr1d([1,2], [3,4,5], [6,7])
+        iaa1 = union_arr1d([1,2], [3,4,5], [6,7])  ! use auto-allocate rule
         print *, iaa1
         call assert(all(iaa1 .eq. [1,2,3,4,5,6,7]), 'Error in rdee.array.union_arr1d for int4')
         deallocate(iaa1)

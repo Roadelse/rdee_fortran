@@ -81,10 +81,21 @@ Contains
         call L1%append('nowwhat')
         call L1%toArray(saa1)
         print *, saa1
+
+        print *, '--------- (E) now test has ----------'
+        L1 = list([1,3])
+        call L1%append('aha')
+        call assert(L1%has('aha'), 'Error in rdee_ds/list => Ass-E1')
+
+        print *, '--------- pass test_basic in test_list.F90! ----------'
+        print *, ''
+
     End Subroutine
 
     Subroutine test_reverse()
         type(list) :: L1, L2
+
+        print *, '--------- Start test_reverse ----------'
 
         L1 = list()
         call L1%append(1)

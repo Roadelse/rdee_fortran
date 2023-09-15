@@ -1202,6 +1202,43 @@ Subroutine list_delete_by_pos(this, pos, pop_node, stat, errmsg)
 
 End Subroutine
 
+Subroutine list_delete_first(this)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    ! ............................ local variables
+    type(node), pointer :: p
+    ! ............................ main body
+    if (this%size .eq. 1) then 
+        call this%reset()
+        return
+    end if
+    p => this%head
+    this%head => p%next
+    this%head%prev => null()
+    this%size = this%size - 1
+
+    deallocate(p)
+End Subroutine
+Subroutine list_delete_last(this)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(inout) :: this
+    ! ............................ local variables
+    type(node), pointer :: p
+    ! ............................ main body
+    if (this%size .eq. 1) then 
+        call this%reset()
+        return
+    end if
+    p => this%tail
+    this%tail => p%prev
+    this%tail%next => null()
+    this%size = this%size - 1
+
+    deallocate(p)
+End Subroutine
+
 Function list_index(this, val) result(rst_ind)
     implicit none
     ! ............................ Arguments
@@ -1253,6 +1290,21 @@ Function list_index_a1d(this, val) result(rst_ind)
     rst_ind = -1
 
 End Function
+
+logical function list_has(this, val) result(rst)
+    implicit none
+    ! ............................ Arguments
+    class(list), intent(in) :: this
+    class(*), intent(in) :: val
+    ! ............................ Local variables
+    integer :: i
+    ! ............................ main body
+    i = this%index(val)
+    rst = .true.
+    if (i .eq. -1) rst = .false.
+
+    return
+end function
 
 Function list_keys(this) result(L)
     implicit none

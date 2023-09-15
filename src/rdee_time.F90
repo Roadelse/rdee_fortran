@@ -16,8 +16,7 @@ Module rdee_time
         type(dict) :: tcl  ! key : [total-time, count, last-time(reset to 0 after one pair of ticks)], do not forget recursive & elemental procedures?
         type(dict) :: keyInc
         type(list) :: keyStack
-        logical :: render_inc
-        type(dict) :: visited
+        ! type(dict) :: visited
         Contains
         Procedure :: start => rdProfiler_start
         Procedure :: end => rdProfiler_end
@@ -30,19 +29,13 @@ Module rdee_time
 
 Contains
 
-function rdProfiler_constructor(render_inc) result(inst)
+function rdProfiler_constructor() result(inst)
     implicit none
-    logical, intent(in), optional :: render_inc
     type(rdProfiler) :: inst
-    logical :: render_inc_
-
-    render_inc_ = .true.
-    if (present(render_inc)) then
-        render_inc_ = render_inc
-    end if
 
     inst%tcl = dict()
-    inst%render_inc = render_inc_
+    inst%keyInc = dict()
+    ! inst%visited = dict() 
 
 end function
 
@@ -61,13 +54,11 @@ subroutine rdProfiler_start(this, id)
     else
         call this%tcl%set(id, [0d0, 0d0, nowTS()])
     end if
-    if (this%render_inc .and. .not. this%visited%hasKey(id)) then
-        call this%visited%set(id, 1) 
-        if (keyStack%size .gt. 0) then
-            call keyInc.set(keyStack%last%fget(), id)
-        end if
-        call keyStack%append(id)
+    
+    if (this%keyStack%size .gt. 0) then
+        call this%keyInc%set(this%keyStack%tail%fget_string()//'->'//id, 1)
     end if
+    call this%keyStack%append(id)
 end subroutine
 
 subroutine rdProfiler_end(this, id)
@@ -93,16 +84,58 @@ subroutine rdProfiler_end(this, id)
         stop 1
     end if
 
-    if () then
-        call keyStack%popLast()
-    end if
+    call this%keyStack%popLast()
 end subroutine
 
-Subroutine rdProfiler_print(this)
+Subroutine rdProfiler_print(this, out1, out2)
     implicit none
     class(rdProfiler), intent(inout) :: this
+    character(*), intent(in), optional :: out1, out2
+    type(list) :: keys
+    type(node), pointer :: np, np2
 
-    call this%tcl%print
+    integer :: istat, logunit1, logunit2
+
+    if (present(out1)) then
+        open(unit=101, file=out1, status='unknown', action='write', iostat=istat)
+        if (istat .ne. 0) then
+            print *, 'Error! Failed to open file: '//trim(out1)
+            stop 1
+        end if
+        logunit1 = 101
+    else
+        logunit1 = 6
+    end if
+    if (present(out2)) then
+        open(unit=102, file=out2, status='unknown', action='write', iostat=istat)
+        if (istat .ne. 0) then
+            print *, 'Error! Failed to open file: '//trim(out2)
+            stop 1
+        end if
+        logunit2 = 102
+    else
+        logunit2 = 6
+    end if
+
+    keys = this%tcl%keys()
+    np => keys%head
+
+    write(logunit1, '(A)') 'section,count,time'
+    do while(associated(np))
+        np2 => this%tcl%fp2node(np%item)
+        write(logunit1, '(A,",",I0,",",1PG0)') um2s(np%item), um2i4(np2%item1d(2)), um2r8(np2%item1d(1))
+        np => np%next
+    end do
+    if (logunit1 .ne. 6) close(logunit1)    
+
+    keys = this%keyInc%keys()
+    np => keys%head
+    do while(associated(np))
+        write(logunit2, '(A)') um2s(np%item)
+        np => np%next
+    end do
+    if (logunit2 .ne. 6) close(logunit2)    
+
 
 End Subroutine
 

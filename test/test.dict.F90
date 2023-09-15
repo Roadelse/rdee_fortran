@@ -71,6 +71,11 @@ contains
         call assert(map1%hasKey('aha'), 'Error in rdee_dict test D1, A2')
         call assert(.not. map1%hasKey('aah'), 'Error in rdee_dict test D1, A3')
 
+        print *, '--------- (E) now test keys ----------'
+        L1 = map1%keys()
+        call assert(L1%has(7), 'Error in rdee_dict => keys(), Ass-E1')
+
+
         PRINT *, '--------- Pass test.dict.F90 => test_base ----------'
 
     end subroutine
