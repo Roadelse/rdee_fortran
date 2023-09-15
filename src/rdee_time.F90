@@ -62,7 +62,7 @@ subroutine rdProfiler_start(this, id)
         call this%tcl%set(id, [0d0, 0d0, nowTS()])
     end if
     if (this%render_inc .and. .not. this%visited%hasKey(id)) then
-        call this%visited%set(id, 1)
+        call this%visited%set(id, 1) 
         if (keyStack%size .gt. 0) then
             call keyInc.set(keyStack%last%fget(), id)
         end if
