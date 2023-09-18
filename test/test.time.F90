@@ -12,11 +12,11 @@ Program test_time
             use, intrinsic :: iso_c_binding
             integer(c_int), value :: useconds
         end subroutine usleep_c
-        subroutine sleep(seconds) bind(C, name="sleep")
+        subroutine sleep_c(seconds) bind(C, name="sleep")
             use iso_c_binding, only: c_int
             implicit none
             integer(kind=c_int), value :: seconds
-        end subroutine sleep
+        end subroutine sleep_c
     end interface
 
     ! call test_now_str()
@@ -72,7 +72,7 @@ subroutine test_rdTimer()
     print *, '>>>>>>>>>>>>>>>>>>>>> now start to test rdTimer'
 
     temp = rdTimer('test', 1)
-    call sleep(1)
+    call sleep_c(1)
     deltaTime = rdTimer('test')
 
     print *, 'delta time = ', deltaTime
@@ -81,7 +81,7 @@ subroutine test_rdTimer()
 
     
     temp = rdTimer()
-    call sleep(1)
+    call sleep_c(1)
     deltaTime = rdTimer()
     print *, 'delta time = ', deltaTime
     call assert(deltaTime .gt. 0.999d0, toString('Error in rdee_time, test_rdTimer, too quick, now is ', deltaTime))
