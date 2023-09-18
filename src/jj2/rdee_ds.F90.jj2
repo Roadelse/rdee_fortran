@@ -25,7 +25,9 @@ Module rdee_ds
       
         procedure ::node_get_item
         !#jj2 for type in ['int4', 'int8', 'real4', 'real8', 'logical', 'string']:
-        Procedure :: node_get_item1d_{{ type }}, fget1d_{{ type }} => node_fget_item1d_{{ type }}, fget_{{ type }} => node_fget_item_{{ type }}
+        Procedure :: node_get_item1d_{{ type }}
+        Procedure :: fget_{{ type }} => node_fget_item_{{ type }}
+        Procedure :: fget1d_{{ type }} => node_fget_item1d_{{ type }}
         !#jj2 endfor
 
         Generic :: get => node_get_item, &

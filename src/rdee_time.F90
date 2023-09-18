@@ -14,7 +14,9 @@ Module rdee_time
 
     Type :: rdProfiler
         private
-        type(dict) :: tcl  ! key : [total-time, count, last-time(reset to 0 after one pair of ticks)], do not forget recursive & elemental procedures?
+        type(dict) :: tcl   ! key : [total-time, count, last-time]
+                            ! last-time is reset to 0 after each rdProfiler_end
+                            ! do not forget recursive & elemental procedures?? (seems ok now)
         type(dict) :: keyInc
         type(list) :: keyStack
         logical :: use_mpi = .false.

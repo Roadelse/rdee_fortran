@@ -24,12 +24,24 @@ Module rdee_ds
         Procedure :: print => node_print
       
         procedure ::node_get_item
-        Procedure :: node_get_item1d_int4, fget1d_int4 => node_fget_item1d_int4, fget_int4 => node_fget_item_int4
-        Procedure :: node_get_item1d_int8, fget1d_int8 => node_fget_item1d_int8, fget_int8 => node_fget_item_int8
-        Procedure :: node_get_item1d_real4, fget1d_real4 => node_fget_item1d_real4, fget_real4 => node_fget_item_real4
-        Procedure :: node_get_item1d_real8, fget1d_real8 => node_fget_item1d_real8, fget_real8 => node_fget_item_real8
-        Procedure :: node_get_item1d_logical, fget1d_logical => node_fget_item1d_logical, fget_logical => node_fget_item_logical
-        Procedure :: node_get_item1d_string, fget1d_string => node_fget_item1d_string, fget_string => node_fget_item_string
+        Procedure :: node_get_item1d_int4
+        Procedure :: fget_int4 => node_fget_item_int4
+        Procedure :: fget1d_int4 => node_fget_item1d_int4
+        Procedure :: node_get_item1d_int8
+        Procedure :: fget_int8 => node_fget_item_int8
+        Procedure :: fget1d_int8 => node_fget_item1d_int8
+        Procedure :: node_get_item1d_real4
+        Procedure :: fget_real4 => node_fget_item_real4
+        Procedure :: fget1d_real4 => node_fget_item1d_real4
+        Procedure :: node_get_item1d_real8
+        Procedure :: fget_real8 => node_fget_item_real8
+        Procedure :: fget1d_real8 => node_fget_item1d_real8
+        Procedure :: node_get_item1d_logical
+        Procedure :: fget_logical => node_fget_item_logical
+        Procedure :: fget1d_logical => node_fget_item1d_logical
+        Procedure :: node_get_item1d_string
+        Procedure :: fget_string => node_fget_item_string
+        Procedure :: fget1d_string => node_fget_item1d_string
         Generic :: get => node_get_item, &
             node_get_item1d_int4, &
             node_get_item1d_int8, &

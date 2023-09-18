@@ -81,7 +81,7 @@ contains
             type is (real(kind=real32));      write(line(istart:),'(1pg0)') generic
             type is (real(kind=real64));      write(line(istart:),'(1pg0)') generic
             type is (real(kind=real128));     write(line(istart:),'(1pg0)') generic
-            type is (logical);                write(line(istart:),'(1l)') generic
+            type is (logical);                write(line(istart:),'(a)') generic
             type is (character(len=*));       write(line(istart:),'(a)') generic
             type is (complex);                write(line(istart:),'("(",1pg0,",",1pg0,")")') generic
         end select

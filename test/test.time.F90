@@ -12,6 +12,11 @@ Program test_time
             use, intrinsic :: iso_c_binding
             integer(c_int), value :: useconds
         end subroutine usleep_c
+        subroutine sleep(seconds) bind(C, name="sleep")
+            use iso_c_binding, only: c_int
+            implicit none
+            integer(kind=c_int), value :: seconds
+        end subroutine sleep
     end interface
 
     ! call test_now_str()
@@ -104,6 +109,9 @@ end subroutine
 
 
 subroutine test_rdProfiler()
+#ifdef MPI
+    use mpi
+#endif
     implicit none
     type(rdProfiler) :: rdp
     integer :: i, C = 0, N = 1000000
