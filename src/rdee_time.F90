@@ -97,44 +97,57 @@ Subroutine rdProfiler_print(this, out1, out2)
     integer :: istat, logunit1, logunit2
 
     if (present(out1)) then
-        open(unit=101, file=out1, status='unknown', action='write', iostat=istat)
-        if (istat .ne. 0) then
-            print *, 'Error! Failed to open file: '//trim(out1)
-            stop 1
+        if (out1 .eq. "no" .or. out1 .eq. "none" .or. out1 .eq. "N" .or. out1 .eq. "F" .or. out1 .eq. "skip") then
+            logunit1 = -1
+        else
+            open(unit=101, file=out1, status='unknown', action='write', iostat=istat)
+            if (istat .ne. 0) then
+                print *, 'Error! Failed to open file: '//trim(out1)
+                stop 1
+            end if
+            logunit1 = 101
         end if
-        logunit1 = 101
     else
         logunit1 = 6
     end if
+
+    if (logunit1 .gt. 0) then
+        keys = this%tcl%keys()
+        np => keys%head
+
+        write(logunit1, '(A)') 'section,count,time'
+        do while(associated(np))
+            np2 => this%tcl%fp2node(np%item)
+            write(logunit1, '(A,",",I0,",",1PG0)') um2s(np%item), um2i4(np2%item1d(2)), um2r8(np2%item1d(1))
+            np => np%next
+        end do
+        if (logunit1 .ne. 6) close(logunit1)    
+    end if
+
     if (present(out2)) then
-        open(unit=102, file=out2, status='unknown', action='write', iostat=istat)
-        if (istat .ne. 0) then
-            print *, 'Error! Failed to open file: '//trim(out2)
-            stop 1
+        if (out2 .eq. "no" .or. out2 .eq. "none" .or. out2 .eq. "N" .or. out2 .eq. "F" .or. out2 .eq. "skip") then
+            logunit2 = -1
+        else
+            open(unit=102, file=out2, status='unknown', action='write', iostat=istat)
+            if (istat .ne. 0) then
+                print *, 'Error! Failed to open file: '//trim(out2)
+                stop 1
+            end if
+            logunit2 = 102
         end if
-        logunit2 = 102
     else
         logunit2 = 6
     end if
 
-    keys = this%tcl%keys()
-    np => keys%head
-
-    write(logunit1, '(A)') 'section,count,time'
-    do while(associated(np))
-        np2 => this%tcl%fp2node(np%item)
-        write(logunit1, '(A,",",I0,",",1PG0)') um2s(np%item), um2i4(np2%item1d(2)), um2r8(np2%item1d(1))
-        np => np%next
-    end do
-    if (logunit1 .ne. 6) close(logunit1)    
-
-    keys = this%keyInc%keys()
-    np => keys%head
-    do while(associated(np))
-        write(logunit2, '(A)') um2s(np%item)
-        np => np%next
-    end do
-    if (logunit2 .ne. 6) close(logunit2)    
+    if (logunit2 .gt. 0) then
+        keys = this%keyInc%keys()
+        np => keys%head
+        do while(associated(np))
+            write(logunit2, '(A)') um2s(np%item)
+            np => np%next
+        end do
+        if (logunit2 .ne. 6) close(logunit2)    
+    end if
 
 
 End Subroutine

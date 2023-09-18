@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>performance-viz</title>
+    <script src="../src/go.js"></script>
+    <script src="../medium/data.js"></script>
+</head>
+
+<body>
+    <div id="d1" style="border: solid 1px blue; width:800px; height:550px"></div>
+    <script>
+        var diagram = new go.Diagram("d1");
+        var $ = go.GraphObject.make;
+
+        diagram.nodeTemplate =
+            $(go.Node, "Auto",
+                $(go.Shape, "RoundedRectangle", { fill: "white" }),
+                $(go.Panel, "Vertical",  // Vertical Panel
+                    $(go.TextBlock,
+                        new go.Binding("text", "key")),
+                    $(go.TextBlock,
+                        new go.Binding("text", "count")),
+                    $(go.TextBlock,
+                        new go.Binding("text", "time"))
+                )
+            );
+
+        // diagram.linkTemplate =
+        //     $(go.Link,
+        //         { routing: go.Link.Orthogonal, corner: 5 },
+        //         $(go.Shape));
+
+
+        var nodeDataArray = sct_data;
+        var linkDataArray = rel_data;
+        diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    </script>
+</body>
+
+</html>
