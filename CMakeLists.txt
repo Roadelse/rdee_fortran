@@ -35,6 +35,14 @@ elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL "GNU")
     add_compile_options(-g -fPIE -ffree-line-length-none -std=f2008 -Wall -fcheck=all -fall-intrinsics -Wno-unused)
 endif()
 
+get_filename_component(BFC ${CMAKE_Fortran_COMPILER} NAME)
+string(SUBSTRING ${BFC} 0 3 compiler_prefix)
+if (${compiler_prefix} STREQUAL "mpi")
+    add_definitions(-DMPI)
+    message(STATUS "§ ${Cyan}(MPI)${ColorReset} add -DMPI definition")
+endif()
+
+
 add_subdirectory(src)
 add_subdirectory(test)
 

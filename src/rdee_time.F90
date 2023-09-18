@@ -1,6 +1,7 @@
 
 Module rdee_time
     use rdee_ds
+    use rdee_string
     implicit none
     
     type(dict) :: rdTimer_TS_dict
@@ -16,6 +17,8 @@ Module rdee_time
         type(dict) :: tcl  ! key : [total-time, count, last-time(reset to 0 after one pair of ticks)], do not forget recursive & elemental procedures?
         type(dict) :: keyInc
         type(list) :: keyStack
+        logical :: use_mpi = .false.
+        integer :: pid = 0
         ! type(dict) :: visited
         Contains
         Procedure :: start => rdProfiler_start
@@ -23,19 +26,34 @@ Module rdee_time
         Procedure :: print => rdProfiler_print
     End Type
 
+    Type(rdProfiler) :: rdp0
+
     interface rdProfiler
         module procedure rdProfiler_constructor
     end interface
 
 Contains
 
-function rdProfiler_constructor() result(inst)
+function rdProfiler_constructor(use_mpi) result(inst)
+#ifdef MPI
+    use mpi
+#endif
     implicit none
     type(rdProfiler) :: inst
+    logical, intent(in), optional :: use_mpi
+    integer(kind=4) :: istat
 
     inst%tcl = dict()
     inst%keyInc = dict()
     ! inst%visited = dict() 
+#ifdef MPI
+    if (present(use_mpi)) then
+        inst%use_mpi = use_mpi
+        if (use_mpi) then
+            call mpi_comm_rank(MPI_COMM_WORLD, inst%pid, istat)
+        end if
+    end if
+#endif
 
 end function
 
@@ -100,7 +118,11 @@ Subroutine rdProfiler_print(this, out1, out2)
         if (out1 .eq. "no" .or. out1 .eq. "none" .or. out1 .eq. "N" .or. out1 .eq. "F" .or. out1 .eq. "skip") then
             logunit1 = -1
         else
-            open(unit=101, file=out1, status='unknown', action='write', iostat=istat)
+            if (this%use_mpi) then
+                open(unit=101, file=toString('p', this%pid, '.', out1), status='unknown', action='write', iostat=istat)
+            else
+                open(unit=101, file=out1, status='unknown', action='write', iostat=istat)
+            end if
             if (istat .ne. 0) then
                 print *, 'Error! Failed to open file: '//trim(out1)
                 stop 1
@@ -128,7 +150,11 @@ Subroutine rdProfiler_print(this, out1, out2)
         if (out2 .eq. "no" .or. out2 .eq. "none" .or. out2 .eq. "N" .or. out2 .eq. "F" .or. out2 .eq. "skip") then
             logunit2 = -1
         else
-            open(unit=102, file=out2, status='unknown', action='write', iostat=istat)
+            if (this%use_mpi) then
+                open(unit=102, file=toString('p', this%pid, '.', out2), status='unknown', action='write', iostat=istat)
+            else
+                open(unit=102, file=out2, status='unknown', action='write', iostat=istat)
+            end if
             if (istat .ne. 0) then
                 print *, 'Error! Failed to open file: '//trim(out2)
                 stop 1
@@ -148,8 +174,6 @@ Subroutine rdProfiler_print(this, out1, out2)
         end do
         if (logunit2 .ne. 6) close(logunit2)    
     end if
-
-
 End Subroutine
 
 

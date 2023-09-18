@@ -107,10 +107,13 @@ subroutine test_rdProfiler()
     implicit none
     type(rdProfiler) :: rdp
     integer :: i, C = 0, N = 1000000
+    integer :: istat
 
     print *, '>>>>>>>>>>>>>>>>>>>>> now start to test rdProfiler'
-
-    rdp = rdProfiler()
+#ifdef MPI
+    call MPI_INIT(istat)
+#endif
+    rdp = rdProfiler(use_mpi=.true.)
     call rdp%start('k3')
     do i = 1, N
         call rdp%start('k1')
@@ -129,7 +132,18 @@ subroutine test_rdProfiler()
 
     call rdp%print
     call rdp%print(out1='test_rdProfiler.sct.csv', out2='test_rdProfiler.relation.txt')
+
+
+    ! ........ test rdp0
+    rdp0 = rdProfiler()
+    call rdp0%start('q')
+    call rdp0%end('q')
     print *, '>>>>>>>>>>>>>>>>>>>>> pass test_rdProfiler (no manual check actually)'
+
+#ifdef MPI
+    call MPI_FINALIZE(istat)
+#endif
+
 end Subroutine
 
 End Program
