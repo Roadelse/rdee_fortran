@@ -20,7 +20,7 @@ class node:
     def height(self):
         maxH = 0
         for c in self.children:
-            maxH = max(maxH, c.depth)
+            maxH = max(maxH, c.height)
         return maxH + 1
     
     @property
@@ -36,7 +36,7 @@ class node:
         indent = ' ' * iw
         ivn = f'i{self.depth-2}'
         fcs1 = f"""
-{indent}do {ivn} = 1, {self.count}
+{indent}do {ivn} = 1, {self.count // self.parent.count if self.parent else 1}
 {indent}    call rdp%start('{self.name}')
 """
         fcs2 = ""
@@ -50,6 +50,11 @@ class node:
             return fcs2
         else:
             return fcs1 + fcs2 + fcs3
+
+    def print_r(self):
+        print(self.section)
+        for c in self.children:
+            c.print_r()
 
 # ↑↑↑ above is preparation
 # *********************************************************
@@ -73,7 +78,6 @@ for nn, n in nodes.items():
         continue
 
     left = nn[:sepIndex]
-    right = nn[sepIndex+2:]
     nodes[left].children.append(n)
     n.parent = nodes[left]
 # ................. render p-c relations and add a root node
@@ -81,6 +85,8 @@ for nn, n in nodes.items():
 
 # ................. generate Fortran90 code
 int_var_declarations = ','.join([f'i{_}' for _ in range(root.height)])
+# print(f"root.height = {root.height}")
+# root.print_r()
 
 codeF = f"""\
 Program get_ovh

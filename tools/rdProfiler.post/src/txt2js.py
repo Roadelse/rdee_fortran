@@ -8,7 +8,7 @@ df = df.rename(columns={'section': 'key'})
 
 # relations = open(f'../input/{os.getenv("RDP_REL_FN")}', 'r').read().splitlines()
 
-with open('../medium/data.js', 'w') as f:
+with open('../output/data.js', 'w') as f:
     f.write('sct_data = [\n')
     f.write('    {"key":"root","count":1,"time":-1},\n')
     for i in range(len(df)):

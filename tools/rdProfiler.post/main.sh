@@ -33,8 +33,8 @@ python remove-ovh.py
 echo '>>> data-viz, generating profiler result diagram in web'
 cd ${mainDir}/src
 cp index.html ../output
+cp go.js ../output
 python txt2js.py
-cp ../input/$RDP_REL_FN ../output
 
 
 # *********************************************** done
