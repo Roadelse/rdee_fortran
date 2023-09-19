@@ -36,6 +36,7 @@
         var nodeDataArray = sct_data;
         var linkDataArray = rel_data;
         diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+        diagram.layout = new go.TreeLayout({ angle: 90, layerSpacing: 35 });
     </script>
 </body>
 

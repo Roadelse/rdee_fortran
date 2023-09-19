@@ -1,37 +1,60 @@
 Module rdee_string
-  use rdee_ds
-  implicit none
+    ! use rdee_ds
+    implicit none
 
 Contains
 
 ! *********************************************************
 ! This subroutine aims to get indexes for specific char in string
 ! *********************************************************
+! this version is deprecated due to avoiding circular use
+! subroutine argwhere_c1s(S, c, idxs)  ! char in(1 as homophonic) string
+!     implicit none
+!     ! ......................... Arguments
+!     character(len=*), intent(in) :: S
+!     character, intent(in) :: c
+!     integer(kind=4), allocatable, intent(out) :: idxs(:)
+!     ! ......................... Local variables
+!     type(list) :: rst_list
+!     integer :: i
+
+!     ! ......................... main body
+!     rst_list = list()
+!     do i = 1, len_trim(S)
+!         if (S(i:i) .eq. c) then
+!             call rst_list%append(i)
+!         end if
+!     end do
+
+!     call rst_list%toArray(idxs)
+
+!     return
+
+! end subroutine argwhere_c1s
+
 subroutine argwhere_c1s(S, c, idxs)  ! char in(1 as homophonic) string
-  implicit none
-  ! ......................... Arguments
-  character(len=*), intent(in) :: S
-  character, intent(in) :: c
-  integer(kind=4), allocatable, intent(out) :: idxs(:)
-  ! ......................... Local variables
-  type(list) :: rst_list
-  integer :: i
+    implicit none
+    ! ......................... Arguments
+    character(len=*), intent(in) :: S
+    character, intent(in) :: c
+    integer(kind=4), allocatable, intent(out) :: idxs(:)
+    ! ......................... Local variables
+    integer(kind=4) :: iBuffer(len_trim(S))
+    integer :: i, j
 
-  ! ......................... main body
-  rst_list = list()
-  do i = 1, len_trim(S)
-    if (S(i:i) .eq. c) then
-      call rst_list%append(i)
-    end if
-  end do
+    ! ......................... main body
+    j = 1
+    do i = 1, len_trim(S)
+        if (S(i:i) .eq. c) then
+            iBuffer(j) = i
+            j = j + 1   
+        end if
+    end do
 
-  call rst_list%toArray(idxs)
+    idxs = iBuffer(1:j)    
 
-  return
-
+    return
 end subroutine argwhere_c1s
-
-
 
 ! *********************************************************
 ! This subroutine aims to convert all generic data type into string

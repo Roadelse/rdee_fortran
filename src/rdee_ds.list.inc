@@ -1464,3 +1464,33 @@ Subroutine list_reverse(this)
     return
 End Subroutine
 
+
+
+Function list_join(this, sep) result(rst)
+    !!! #########################################
+    ! This subroutine aims to join all nodes%item to string
+    !!! #########################################
+    use rdee_string
+    implicit none
+    ! ....................... Argument
+    class(list), intent(inout) :: this
+    character(*), intent(in) :: sep
+    character(len=:), allocatable :: rst
+    ! ....................... Variables
+    type(node), pointer :: np
+    character(len=1024) :: sbuffer
+
+    ! ....................... Main body
+    if (this%size .eq. 0) then
+        rst = ''
+        return
+    end if
+
+    sbuffer = toString(this%head%item)
+    np => this%head%next
+    do while(associated(np))
+        sbuffer = trim(sbuffer)//sep//toString(np%item)
+        np => np%next
+    end do
+    rst = trim(sbuffer)
+End Function

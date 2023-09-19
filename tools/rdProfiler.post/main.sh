@@ -4,8 +4,8 @@
 echo '>>> init, please make sure you have set the input/config.sh'
 mainDir=$PWD
 source ./input/config.sh
-rm -f medium
-rm -f output
+rm -rf medium
+rm -rf output
 mkdir -p medium output
 
 # *********************************************** handle overhead
@@ -22,6 +22,7 @@ for i in `seq 1 1 ${RDP_OVH_REPEAT}`
 do
     ./rdp-ovh.x ../medium/$i.csv
 done
+
 
 # ........................... analyze results and remove the overhead
 cd ${mainDir}/src

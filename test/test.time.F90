@@ -6,6 +6,7 @@ Program test_time
     use rdee_time
     use rdee_string
     implicit none
+    character(64) :: arg1
 
     interface
         subroutine usleep_c(useconds) bind(c, name="usleep")
@@ -19,13 +20,33 @@ Program test_time
         end subroutine sleep_c
     end interface
 
-    ! call test_now_str()
-    ! call test_now()
-    ! call test_nowTS()
-    ! call test_rdTimer()
 
-    ! call perf_nowTS()
-    call test_rdProfiler
+    call get_command_argument(1, arg1)
+
+    if (arg1 .eq. 'ALL' .or. arg1 .eq. 'all' .or. arg1 .eq. '') then
+        call test_now_str()
+        call test_now
+        call test_nowTS
+        call test_rdTimer
+        call perf_nowTS
+        call test_rdProfiler
+    elseif (arg1 .eq. 'test_rdProfiler') then
+        call test_rdProfiler
+    elseif (arg1 .eq. 'perf_nowTS') then
+        call perf_nowTS
+    elseif (arg1 .eq. 'test_rdTimer') then
+        call test_rdTimer
+    elseif (arg1 .eq. 'test_nowTS') then
+        call test_nowTS
+    elseif (arg1 .eq. 'test_now') then
+        call test_now
+    elseif (arg1 .eq. 'test_now_str') then
+        call test_now_str
+    else
+        print *, 'unknwon argument!'
+        stop 1
+    end if 
+
 
 contains
 
@@ -114,9 +135,10 @@ subroutine test_rdProfiler()
 #endif
     implicit none
     type(rdProfiler) :: rdp
-    integer :: i, C = 0, N = 1000000
+    integer :: i, C = 0, N = 100000
     integer :: istat
 
+    print *, ''
     print *, '>>>>>>>>>>>>>>>>>>>>> now start to test rdProfiler'
 #ifdef MPI
     call MPI_INIT(istat)
@@ -126,6 +148,7 @@ subroutine test_rdProfiler()
     do i = 1, N
         call rdp%start('k1')
         C = C*i / N + i
+        ! call usleep_c(5000)
         call rdp%end('k1')
     end do
     call rdp%end('k3')
@@ -139,7 +162,7 @@ subroutine test_rdProfiler()
     end do
 
     call rdp%print
-    call rdp%print(out1='test_rdProfiler.sct.csv', out2='test_rdProfiler.relation.txt')
+    call rdp%print(out='test_rdProfiler.sct.csv')
 
 
     ! ........ test rdp0
@@ -147,11 +170,12 @@ subroutine test_rdProfiler()
     call rdp0%start('q')
     call rdp0%end('q')
     print *, '>>>>>>>>>>>>>>>>>>>>> pass test_rdProfiler (no manual check actually)'
+    print *, ''
 
 #ifdef MPI
     call MPI_FINALIZE(istat)
 #endif
 
-end Subroutine
+end Subroutine test_rdProfiler
 
 End Program

@@ -1,8 +1,25 @@
 program main
-use rdee_ds
-implicit none
-    call test_basic
-    call test_reverse
+    use rdee_ds
+    implicit none
+
+    character(64) :: arg1
+
+    call get_command_argument(1, arg1)
+
+    if (arg1 .eq. 'ALL' .or. arg1 .eq. 'all' .or. arg1 .eq. '') then
+        call test_basic
+        call test_reverse
+        call test_join
+    elseif (arg1 .eq. 'test_basic') then
+        call test_basic
+    elseif (arg1 .eq. 'test_reverse') then
+        call test_reverse
+    elseif (arg1 .eq. 'test_join') then
+        call test_join
+    else
+        print *, 'unknwon argument!'
+        stop 1
+    end if 
 
 Contains
 
@@ -135,7 +152,27 @@ Contains
         call assert(.not. associated(L1%head%prev), 'Error in list%reverse')
         call assert(.not. associated(L1%tail%next), 'Error in list%reverse')
 
-    End Subroutine
+        print *, '--------- pass reverse ----------'
+        print *, ''
+    End Subroutine test_reverse
+
+    Subroutine test_join()
+        type(list) :: L1
+
+        print *, ''
+        print *, '--------- Start test_join ----------'
+
+        call L1%append(3)
+        call L1%append('why')
+        call L1%append('aha')
+
+        print *, L1%join('->')
+        call assert(L1%join('->') .eq. '3->why->aha', 'Error in rdee_string -> test_join')
+
+        print *, '--------- pass test_join ----------'
+        print *, ''
+    End Subroutine test_join
+
 
 end program
 

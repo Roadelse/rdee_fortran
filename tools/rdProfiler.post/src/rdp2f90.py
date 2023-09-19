@@ -5,11 +5,12 @@ import pandas as pd
 
 
 df = pd.read_csv(f'../input/{os.getenv("RDP_SCT_FN")}')
-relations = open(f'../input/{os.getenv("RDP_REL_FN")}', 'r').read().splitlines()
 
 class node:
-    def __init__(self, name, count, time):
-        self.name = name
+    def __init__(self, section, count, time):
+        self.section = section
+        sepIndex = section.rfind('->')
+        self.name = self.section[sepIndex+2:] if sepIndex != -1 else self.section
         self.count = count
         self.time = time
         self.children = []
@@ -61,19 +62,22 @@ nodes = {}
 for i in range(len(df)):
     dfR = df.iloc[i]
     nodes[dfR.section] = node(dfR['section'], dfR['count'], dfR['time'])
-for rel in relations:
-    left, right = rel.split('->')
-    nodes[left].children.append(nodes[right])
-    nodes[right].parent = nodes[left]
-        
 
-# ................. render p-c relations and add a root node
 root = node('all', 1, -1)
 
 for nn, n in nodes.items():
-    if n.parent is None:
-        n.parent = root
+    sepIndex = nn.rfind('->')
+    if sepIndex == -1:
         root.children.append(n)
+        n.parent = root
+        continue
+
+    left = nn[:sepIndex]
+    right = nn[sepIndex+2:]
+    nodes[left].children.append(n)
+    n.parent = nodes[left]
+# ................. render p-c relations and add a root node
+
 
 # ................. generate Fortran90 code
 int_var_declarations = ','.join([f'i{_}' for _ in range(root.height)])
@@ -96,7 +100,7 @@ Program get_ovh
     if (ofile .eq. 'stdout' .or. ofile .eq. '') then
         call rdp%print
     else
-        call rdp%print(out1=trim(ofile), out2='skip')
+        call rdp%print(out=trim(ofile))
     end if
 End Program
 """

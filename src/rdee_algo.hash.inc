@@ -38,7 +38,7 @@ Function hash_mod_s(key, size) result(rst_i)
     ! ............................ return variable
     integer :: rst_i
     ! ............................ local variables
-    character :: tmp(len(key))
+    character :: tmp(len_trim(key))
     integer :: keySum
     integer :: i
 

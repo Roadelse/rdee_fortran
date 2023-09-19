@@ -13,15 +13,23 @@ Module rdee_time
     End Interface
 
     Type :: rdProfiler
+        ! ***************************************************
+        ! Do not support: 
+        !     1. self recursive : a->a->a->a->...
+        !     2. circular recursive : a->b->a->b->...
+        ! current weakness : 
+        !     overhead : ~5s for 1M pairs
+        ! ***************************************************
         private
         type(dict) :: tcl   ! key : [total-time, count, last-time]
                             ! last-time is reset to 0 after each rdProfiler_end
                             ! do not forget recursive & elemental procedures?? (seems ok now)
         type(dict) :: keyInc
         type(list) :: keyStack
+        character(128) :: sechain   ! section chain,  e.g., cmaq.aero.aeroproc
+        integer(kind=4) :: current_section_id_length
         logical :: use_mpi = .false.
-        integer :: pid = 0
-        ! type(dict) :: visited
+        integer(kind=4) :: pid = 0
         Contains
         Procedure :: start => rdProfiler_start
         Procedure :: end => rdProfiler_end
@@ -64,21 +72,23 @@ subroutine rdProfiler_start(this, id)
     class(rdProfiler), intent(inout) :: this
     character(*), intent(in) :: id
     type(node),pointer :: tcl_node
+    ! character(len=:),allocatable :: idc  ! id chain
 
-    if (this%tcl%hasKey(id)) then
-        tcl_node => this%tcl%fp2node(id)
-        if (um2i4(tcl_node%item1d(3)) .gt. 0) then
-            return
-        end if
+    if (this%keyStack%has(id)) then
+        print *, 'Error! do not support recursive by now, neither self recursive nor circular recursive'
+        stop 1
+    end if
+
+    call this%keyStack%append(id)
+    this%sechain = this%keyStack%join('->')
+    ! print *, 'sechain = ',this%sechain
+
+    if (this%tcl%hasKey(this%sechain)) then
+        tcl_node => this%tcl%fp2node(this%sechain)
         call um_assign(tcl_node%item1d(3), nowTS())
     else
-        call this%tcl%set(id, [0d0, 0d0, nowTS()])
+        call this%tcl%set(trim(this%sechain), [0d0, 0d0, nowTS()])
     end if
-    
-    if (this%keyStack%size .gt. 0) then
-        call this%keyInc%set(this%keyStack%tail%fget_string()//'->'//id, 1)
-    end if
-    call this%keyStack%append(id)
 end subroutine
 
 subroutine rdProfiler_end(this, id)
@@ -86,96 +96,65 @@ subroutine rdProfiler_end(this, id)
     class(rdProfiler), intent(inout) :: this
     character(*), intent(in) :: id
     type(node),pointer :: tcl_node
-
-    if (this%tcl%hasKey(id)) then
-        tcl_node => this%tcl%fp2node(id)
-        ! call this%tcl%set(id, [um2i8(tcl_node%item1d(1)) + nowTS() - um2i8(tcl_node%item1d(3)), um2i8(tcl_node%item1d(2)) + 1, 0d0])
-        ! tcl_node%item1d(1) = tcl_node%item1d(1) + (nowTS() - tcl_node%item1d(3))
-        ! tcl_node%item1d(2) = tcl_node%item1d(2) + 1
-        ! tcl_node%item1d(3) = 0
-        select type(v1d => tcl_node%item1d)
-            type is (real(kind=8))
-                v1d(1) = v1d(1) + (nowTS() - v1d(3))
-                v1d(2) = v1d(2) + 1
-                v1d(3) = 0d0
-        end select
-    else
-        print *, 'Error! missing rdProfiler%start operation'
-        stop 1
-    end if
+    
+    this%sechain = this%keyStack%join('->')
+    tcl_node => this%tcl%fp2node(trim(this%sechain))
+    ! call this%tcl%set(id, [um2i8(tcl_node%item1d(1)) + nowTS() - um2i8(tcl_node%item1d(3)), um2i8(tcl_node%item1d(2)) + 1, 0d0])
+    ! tcl_node%item1d(1) = tcl_node%item1d(1) + (nowTS() - tcl_node%item1d(3))
+    ! tcl_node%item1d(2) = tcl_node%item1d(2) + 1
+    ! tcl_node%item1d(3) = 0
+    select type(v1d => tcl_node%item1d)
+        type is (real(kind=8))
+            v1d(1) = v1d(1) + (nowTS() - v1d(3))
+            v1d(2) = v1d(2) + 1
+            v1d(3) = 0d0
+    end select
+    ! call tcl_node%print
 
     call this%keyStack%popLast()
 end subroutine
 
-Subroutine rdProfiler_print(this, out1, out2)
+Subroutine rdProfiler_print(this, out)
     implicit none
     class(rdProfiler), intent(inout) :: this
-    character(*), intent(in), optional :: out1, out2
+    character(*), intent(in), optional :: out
     type(list) :: keys
     type(node), pointer :: np, np2
 
-    integer :: istat, logunit1, logunit2
+    integer :: istat, logunit
 
-    if (present(out1)) then
-        if (out1 .eq. "no" .or. out1 .eq. "none" .or. out1 .eq. "N" .or. out1 .eq. "F" .or. out1 .eq. "skip") then
-            logunit1 = -1
+    if (present(out)) then
+        if (out .eq. "no" .or. out .eq. "none" .or. out .eq. "N" .or. out .eq. "F" .or. out .eq. "skip") then
+            logunit = -1
         else
             if (this%use_mpi) then
-                open(unit=101, file=toString('p', this%pid, '.', out1), status='unknown', action='write', iostat=istat)
+                open(unit=101, file=toString('p', this%pid, '.', out), status='unknown', action='write', iostat=istat)
             else
-                open(unit=101, file=out1, status='unknown', action='write', iostat=istat)
+                open(unit=101, file=out, status='unknown', action='write', iostat=istat)
             end if
             if (istat .ne. 0) then
-                print *, 'Error! Failed to open file: '//trim(out1)
+                print *, 'Error! Failed to open file: '//trim(out)
                 stop 1
             end if
-            logunit1 = 101
+            logunit = 101
         end if
     else
-        logunit1 = 6
+        logunit = 6
     end if
 
-    if (logunit1 .gt. 0) then
+    if (logunit .gt. 0) then
         keys = this%tcl%keys()
         np => keys%head
 
-        write(logunit1, '(A)') 'section,count,time'
+        write(logunit, '(A)') 'section,count,time'
         do while(associated(np))
             np2 => this%tcl%fp2node(np%item)
-            write(logunit1, '(A,",",I0,",",1PG0)') um2s(np%item), um2i4(np2%item1d(2)), um2r8(np2%item1d(1))
+            write(logunit, '(A,",",I0,",",1PG0)') um2s(np%item), um2i4(np2%item1d(2)), um2r8(np2%item1d(1))
             np => np%next
         end do
-        if (logunit1 .ne. 6) close(logunit1)    
+        if (logunit .ne. 6) close(logunit)    
     end if
 
-    if (present(out2)) then
-        if (out2 .eq. "no" .or. out2 .eq. "none" .or. out2 .eq. "N" .or. out2 .eq. "F" .or. out2 .eq. "skip") then
-            logunit2 = -1
-        else
-            if (this%use_mpi) then
-                open(unit=102, file=toString('p', this%pid, '.', out2), status='unknown', action='write', iostat=istat)
-            else
-                open(unit=102, file=out2, status='unknown', action='write', iostat=istat)
-            end if
-            if (istat .ne. 0) then
-                print *, 'Error! Failed to open file: '//trim(out2)
-                stop 1
-            end if
-            logunit2 = 102
-        end if
-    else
-        logunit2 = 6
-    end if
-
-    if (logunit2 .gt. 0) then
-        keys = this%keyInc%keys()
-        np => keys%head
-        do while(associated(np))
-            write(logunit2, '(A)') um2s(np%item)
-            np => np%next
-        end do
-        if (logunit2 .ne. 6) close(logunit2)    
-    end if
 End Subroutine
 
 

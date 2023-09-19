@@ -99,6 +99,7 @@ Module rdee_ds
         !#jj2 endfor
 
         Procedure :: reverse => list_reverse
+        Procedure :: join => list_join
 
     End Type
 

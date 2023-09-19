@@ -141,6 +141,7 @@ Module rdee_ds
             list_toArray_logical,&
             list_toArray_string
         Procedure :: reverse => list_reverse
+        Procedure :: join => list_join
 
     End Type
 
