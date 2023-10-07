@@ -18,7 +18,8 @@ Module rdee_time
 
     End Type
     Interface rdDateTime
-        Module Procedure rdDateTime_constructor
+        Module Procedure rddt_constructor
+        Module Procedure rddt_constructor_fromStr
     End Interface
 
     Interface rdTimer
@@ -62,7 +63,7 @@ Module rdee_time
 
 Contains
 
-Function rdDateTime_constructor(y, m, d, hh, mm, ss) result(rst)
+Function rddt_constructor(y, m, d, hh, mm, ss) result(rst)
     implicit none
 
     integer(kind=4), intent(in), optional :: y, m, d, hh, mm, ss
@@ -75,6 +76,21 @@ Function rdDateTime_constructor(y, m, d, hh, mm, ss) result(rst)
     if (present(mm)) rst%minute = mm
     if (present(ss)) rst%second = ss
     call rst%checkValid
+End Function
+
+Function rddt_constructor_fromStr(S, format) result(rst)
+    implicit none
+    ! ...................................... Definitions
+    Character(Len=*), intent(in) :: S
+    Character(Len=*), intent(in), optional :: format
+
+    type(rdDateTime) :: rst
+
+    if (present(format)) then
+        call rst%fromString(S, format)
+    else
+        call rst%fromString(S)
+    end if
 End Function
 
 Subroutine rddt_checkValid(this)
@@ -159,13 +175,14 @@ Subroutine rddt_fromString(this, dtmStr, format)
                 i = i + 1
             else
                 i = i + 1
+                j = j + 1
             end if
         end do
     else
         i = 1
         j = 1
         Sdigits = S3digits(dtmStr)
-        print *, 'Sdigits=',Sdigits
+        ! print *, 'Sdigits=',Sdigits
         L = len(Sdigits)
         if (L .ge. 4) this%year = s2i4(Sdigits(1:4))
         if (L .ge. 6) this%month = s2i4(Sdigits(5:6))
@@ -192,19 +209,24 @@ Function rddt_toString(this, format1) result(rst)
     Character(len=:), allocatable :: rst
 
     ! ................................. Main Body
-    print *, 'Enter toString'
+    ! print *, 'Enter toString'
     rstHolder = ''
     ! >>>>>>>>>>>>>>>>>> handle optional arguments
     if (present(format1)) then
         call assert(len_trim(format1) .lt. 30, 'Error in rdDatetime%fromString! Unknown string format.')
         format_ = format1
     else
-        format_ = '%Y%m%d'
-        if (this%hour + this%minute + this%second .gt. 0) then
+        if (this%hour .eq. -1) then
+            format_ = '%Y%m%d'
+        elseif (this%minute .eq. -1) then
+            format_ = '%Y%m%d%H'
+        elseif (this%second .eq. -1) then
+            format_ = '%Y%m%d%H%M'
+        else
             format_ = '%Y%m%d%H%M%S'
         end if
     end if
-    print *, 'enter toString, format=', format_
+    ! print *, 'enter toString, format=', format_
     ! >>>>>>>>>>>>>>>>>> resolve format
     i = 1
     j = 1
