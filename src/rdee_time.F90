@@ -7,6 +7,18 @@ Module rdee_time
     type(dict) :: rdTimer_TS_dict
     real(kind=8) :: rdTimer_TS_array(10) = [0,0,0,0,0,0,0,0,0,0]
 
+    Type, Public :: rdDateTime
+        Integer(kind=4) :: year=-1, month=-1, day=-1, hour=-1, minute=-1, second=-1, msecond=0, usecond=0
+
+      Contains
+        Procedure :: fromString => rddt_fromString
+        Procedure :: toString => rddt_toString
+
+    End Type
+    Interface rdDateTime
+        Module Procedure rdDateTime_constructor
+    End Interface
+
     Interface rdTimer
         module procedure rdTimer_by_id
         module procedure rdTimer_by_idx
@@ -42,7 +54,164 @@ Module rdee_time
         module procedure rdProfiler_constructor
     end interface
 
+    Interface assignment(=)
+    
+    End Interface
+
 Contains
+
+Function rdDateTime_constructor(y, m, d, hh, mm, ss) result(rst)
+    implicit none
+
+    integer(kind=4), intent(in), optional :: y, m, d, hh, mm, ss
+    type(rdDateTime) :: rst
+
+    if (present(y)) rst%year = y
+    if (present(m)) rst%month = m
+    if (present(d)) rst%day = d
+    if (present(hh)) rst%hour = hh
+    if (present(mm)) rst%minute = mm
+    if (present(ss)) rst%second = ss
+
+End Function
+
+Subroutine rddt_fromString(this, dtmStr, format)
+    implicit none
+    ! ................................. Argument
+    class(rdDateTime), intent(inout) :: this
+    character(len=*), intent(in) :: dtmStr  ! datetime string
+    character(len=*), intent(in), optional :: format
+    ! ................................. Local variables
+    character(len=30) :: format_
+    integer(kind=4) :: i, j, k
+    ! ................................. Main Body
+    ! >>>>>>>>>>>>>>>>>> handle optional arguments
+    if (present(format)) then
+        call assert(len_trim(format) .lt. 30, 'Error in rdDatetime%fromString! Unknown string format.')
+        ! >>>>>>>>>>>>>>>>>> resolve format
+        i = 1
+        j = 1
+        do while(i .le. len_trim(format))
+            if (format(i:i) .eq. '%') then
+                i = i + 1
+                Select case (format(i:i))
+
+                case ('Y')  ! year: 1999, 2023, ...
+                    this%year = s2i4(dtmStr(j:j+3))
+                    j = j + 4
+                case ('y')  ! year: 99, 00, 03, 13, 23, ...
+                    k = s2i4(dtmStr(j:j+1))
+                    if (k .ge. 69) then
+                        this%year = 1900 + k
+                    else
+                        this%year = 2000 + k
+                    end if
+                    j = j + 2
+                case ('m')  ! month: 01, 02, 03, ... 
+                    this%month = s2i4(dtmStr(j:j+1))
+                    j = j + 2
+                case ('d')  ! day: 01, 02, ..., 31
+                    this%day = s2i4(dtmStr(j:j+1))
+                    j = j + 2
+                case ('H')  ! hour : 00, 01, ..., 23
+                    this%hour = s2i4(dtmStr(j:j+1))
+                    j = j + 2
+                case ('M')  ! Minute : 00, 01, ..., 59
+                    this%minute = s2i4(dtmStr(j:j+1))
+                    j = j + 2
+                case ('S')  ! Second : 00, 01, ..., 59
+                    this%second = s2i4(dtmStr(j:j+1))
+                    j = j + 2
+                case default
+                    print *, 'Error in rdDatetime%fromString! Unknown flag: '//trim(format_(i-1:i))
+                    stop 1
+                end select
+                i = i + 1
+            else
+                i = i + 1
+            end if
+        end do
+    else
+        i = 1
+        j = 1
+        do while(i .le. len_trim(format)) 
+            if ()
+        end do
+    end if
+End Subroutine rddt_fromString
+
+
+Function rddt_toString(this, format1) result(rst)
+    implicit none
+    ! ................................. Arguments
+    class(rdDateTime), intent(inout) :: this
+    character(len=*), intent(in), optional :: format1
+    ! ................................. Local variables
+    character(len=30) :: format_
+    integer(kind=4) :: i, j, k
+    Character(len=80) :: rstHolder
+    ! ................................. Return variable
+    Character(len=:), allocatable :: rst
+
+    ! ................................. Main Body
+    ! print *, 'Enter toString'
+    rstHolder = ''
+    ! >>>>>>>>>>>>>>>>>> handle optional arguments
+    if (present(format1)) then
+        call assert(len_trim(format1) .lt. 30, 'Error in rdDatetime%fromString! Unknown string format.')
+        format_ = format1
+    else
+        format_ = '%Y%m%d'
+        if (this%hour + this%minute + this%second .ne. 0) then
+            format_ = '%Y%m%d%H%M%S'
+        end if
+    end if
+
+    ! >>>>>>>>>>>>>>>>>> resolve format
+    i = 1
+    j = 1
+    do while(i .le. len_trim(format_))
+        ! print *, 'i=', i
+        if (format_(i:i) .eq. '%') then
+            i = i + 1
+            Select case (format_(i:i))
+
+            case ('Y')  ! year: 1999, 2023, ...
+                ! this%year = s2i4(format_(i:i+3))
+                rstHolder(j:j+3) = i42s(this%year)
+                j = j + 4
+            case ('y')  ! year: 99, 00, 03, 13, 23, ...
+                write(rstHolder(j:j+1), '(I0.2)') mod(this%year, 100)
+                j = j + 2
+            case ('m')  ! month: 01, 02, 03, ... 
+                write(rstHolder(j:j+1), '(I0.2)') this%month
+                j = j + 2
+            case ('d')  ! day: 01, 02, ..., 31
+                write(rstHolder(j:j+1), '(I0.2)') this%day
+                j = j + 2
+            case ('H')  ! hour : 00, 01, ..., 23
+                write(rstHolder(j:j+1), '(I0.2)') this%hour
+                j = j + 2
+            case ('M')  ! Minute : 00, 01, ..., 59
+                write(rstHolder(j:j+1), '(I0.2)') this%minute
+                j = j + 2
+            case ('S')  ! Second : 00, 01, ..., 59
+                write(rstHolder(j:j+1), '(I0.2)') this%second
+                j = j + 2
+            case default
+                print *, 'Error in rdDatetime%fromString! Unknown flag: '//trim(format_(i-1:i))
+                stop 1
+            end select
+            i = i + 1
+        else
+            rstHolder(j:j) = format_(i:i)
+            i = i + 1
+            j = j + 1
+        end if
+    end do
+    ! print *, 'len=',len_trim(rstHolder)
+    rst = trim(rstHolder)
+End Function rddt_toString
 
 function rdProfiler_constructor(use_mpi) result(inst)
 #ifdef MPI

@@ -30,6 +30,7 @@ Program test_time
         call test_rdTimer
         call perf_nowTS
         call test_rdProfiler
+        call test_rdDateTime
     elseif (arg1 .eq. 'test_rdProfiler') then
         call test_rdProfiler
     elseif (arg1 .eq. 'perf_nowTS') then
@@ -42,6 +43,8 @@ Program test_time
         call test_now
     elseif (arg1 .eq. 'test_now_str') then
         call test_now_str
+    elseif (arg1 .eq. 'test_rdDateTime') then
+        call test_rdDateTime
     else
         print *, 'unknwon argument!'
         stop 1
@@ -177,5 +180,19 @@ subroutine test_rdProfiler()
 #endif
 
 end Subroutine test_rdProfiler
+
+Subroutine test_rdDateTime()
+    implicit none
+
+    type(rdDateTime) :: dtm1
+
+    print *, '>>>>>>>>>>> Enter test_rdDateTime <<<<<<<<<<<<<'
+    dtm1 = rdDateTime(y=2018, m=1, d=1)
+    print *, dtm1%toString()
+    call assert(dtm1%toString() .eq. '20180101', 'Error in rdDateTime%toString')
+    print *, dtm1%toString('%Y/%m/%d %H')
+    call assert(dtm1%toString('%Y/%m/%d %H') .eq. '2018/01/01 00', 'Error in rdDateTime%toString, with format')
+
+End Subroutine
 
 End Program

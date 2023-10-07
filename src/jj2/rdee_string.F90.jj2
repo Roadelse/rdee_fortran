@@ -4,6 +4,17 @@ Module rdee_string
 
 Contains
 
+
+! *********************************************************
+! bsaic functions
+! *********************************************************
+Logical Function isDigit(c)
+    implicit none
+    character(len=1), intent(in) :: c
+
+    
+
+
 ! *********************************************************
 ! This subroutine aims to get indexes for specific char in string
 ! *********************************************************
@@ -152,5 +163,129 @@ function string1dBuilder(s1, s2, s3, s4, s5, s6, s7, s8, s9, s10) result(rst)
 
     return
 end function
+
+
+
+! *********************************************************
+! Series of functions for type converting between string
+! and numerical variables 
+! *********************************************************
+Function s2i4(s)
+    implicit none
+    Character(len=*), intent(in) :: s
+    integer(kind=4) :: s2i4
+
+    read(s,*) s2i4
+End Function s2i4
+
+Function s2i8(s)
+    implicit none
+    Character(len=*), intent(in) :: s
+    integer(kind=8) :: s2i8
+
+    read(s,*) s2i8
+End Function s2i8
+
+Function s2r4(s)
+    implicit none
+    Character(len=*), intent(in) :: s
+    real(kind=4) :: s2r4
+
+    read(s,*) s2r4
+End Function s2r4
+
+Function s2r8(s)
+    implicit none
+    Character(len=*), intent(in) :: s
+    real(kind=8) :: s2r8
+
+    read(s,*) s2r8
+End Function s2r8
+
+Function i42s(ir) result(rst)
+    implicit none
+    integer(kind=4), intent(in) :: ir
+    Character(len=:), allocatable :: rst
+    Character(len=30) :: rst_
+
+    write(rst_,'(I0)') ir
+    rst = trim(rst_)
+End Function i42s
+
+Function i82s(ir) result(rst)
+    implicit none
+    integer(kind=8), intent(in) :: ir
+    Character(len=:), allocatable :: rst
+    Character(len=30) :: rst_
+
+    write(rst_,'(I0)') ir
+    rst = trim(rst_)
+End Function i82s
+
+Function r42s(ir, decimal) result(rst)
+    implicit none
+    real(kind=4), intent(in) :: ir
+    integer(kind=4), intent(in), optional :: decimal
+
+    Character(len=:), allocatable :: rst
+    Character(len=30) :: rst_
+
+    if (present(decimal)) then
+        write(rst_, toString('(F0.', decimal, ')')) ir
+    else
+        write(rst_, '(1pg0)') ir
+    end if
+    rst = trim(rst_)
+End Function r42s
+
+Function r82s(ir, decimal) result(rst)
+    implicit none
+    real(kind=8), intent(in) :: ir
+    integer(kind=4), intent(in), optional :: decimal
+
+    Character(len=:), allocatable :: rst
+    Character(len=30) :: rst_
+
+    
+    if (present(decimal)) then
+        write(rst_, toString('(F0.', decimal, ')')) ir
+    else
+        write(rst_, '(1pg0)') ir
+    end if
+    rst = trim(rst_)
+End Function r82s
+
+ 
+
+! *********************************************************
+! trim a string in both sides, and relative apis
+! *********************************************************
+Function trim2(S)
+    implicit none
+    character(len=*), intent(in) :: S
+    character(len=:), allocatable :: trim2
+
+    integer(kind=4) :: i, L
+
+    L = len_trim(S)
+    if (L .eq. 0) then
+        trim2 = ''
+    else
+        do i = 1, len_trim(S)
+            if (S(i:i) .ne. ' ') exit
+        end do
+        trim2 = trim(S(i:))
+    end if
+
+End Function
+
+Function len_trim2(S)
+    implicit none
+    character(len=*), intent(in) :: S
+    integer(kind=4) :: len_trim2
+
+    len_trim2 = len(trim2(S))
+
+End Function
 
 End Module

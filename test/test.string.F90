@@ -10,12 +10,18 @@ Program main
         call test_argwhere_c1s
         call test_toString
         call test_string1dBuilder
+        call test_s2aa2s  ! string to all, all to string
+        call test_trim2
     elseif (arg1 .eq. 'test_argwhere_c1s') then
         call test_argwhere_c1s
     elseif (arg1 .eq. 'test_toString') then
         call test_toString
     elseif (arg1 .eq. 'test_string1dBuilder') then
         call test_string1dBuilder
+    elseif (arg1 .eq. 'test_s2aa2s') then
+        call test_s2aa2s  ! string to all, all to string 
+    elseif (arg1 .eq. 'test_trim2') then
+        call test_trim2
     else
         print *, 'unknwon argument!'
         stop 1
@@ -76,5 +82,25 @@ contains
 
         print *, sa1
     end subroutine
+
+Subroutine test_s2aa2s()
+    implicit none
+
+    call assert(s2i4('123') .eq. 123, 'Error in s2i4 from test.string.F90/test_s2aa2s')
+    print *, i42s(456)
+    call assert(i42s(456) .eq. '456', 'Error in i42s from test.string.F90/test_s2aa2s')
+    print *, r42s(7.89)
+    print *, r42s(7.89, 2)
+    call assert(r42s(7.89, 2) .eq. '7.89', 'Error in r42s(decimal=2) from test.string.F90/test_s2aa2s')
+    
+End Subroutine
+
+Subroutine test_trim2()
+    implicit none
+
+    call assert(trim2('  aha  ') .eq. 'aha', 'Error in trim2')
+    call assert(len_trim2('  aha  ') .eq. 3, 'Error in len_trim2')
+
+End Subroutine
 
 End Program
