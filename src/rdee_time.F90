@@ -13,6 +13,8 @@ Module rdee_time
       Contains
         Procedure :: fromString => rddt_fromString
         Procedure :: toString => rddt_toString
+        Procedure :: checkValid => rddt_checkValid
+        Procedure :: print => rddt_print
 
     End Type
     Interface rdDateTime
@@ -72,8 +74,34 @@ Function rdDateTime_constructor(y, m, d, hh, mm, ss) result(rst)
     if (present(hh)) rst%hour = hh
     if (present(mm)) rst%minute = mm
     if (present(ss)) rst%second = ss
-
+    call rst%checkValid
 End Function
+
+Subroutine rddt_checkValid(this)
+    implicit none
+    ! ................................. Argument
+    class(rdDateTime), intent(inout) :: this
+    ! ................................. Main Body
+    call assert(this%year .gt. 1700 .and. this%year .lt. 2500 .or. this%year .eq. -1, 'Error! Invalid year in rdDateTime')
+    call assert(this%month .ge. 1 .and. this%month .le. 12 .or. this%month .eq. -1, 'Error! Invalid month in rdDateTime')
+    call assert(this%day .ge. 1 .and. this%day .le. 31 .or. this%day .eq. -1, 'Error! Invalid day in rdDateTime')
+    call assert(this%hour .ge. 0 .and. this%hour .le. 23 .or. this%hour .eq. -1, toString('Error! Invalid hour in rdDateTime, now is:', this%hour))
+    call assert(this%minute .ge. 0 .and. this%minute .le. 59 .or. this%minute .eq. -1, 'Error! Invalid minute in rdDateTime')
+    call assert(this%second .ge. 0 .and. this%second .le. 59 .or. this%second .eq. -1, 'Error! Invalid second in rdDateTime')
+End Subroutine
+
+Subroutine rddt_print(this)
+    implicit none
+    ! ................................. Argument
+    class(rdDateTime), intent(inout) :: this
+    ! ................................. Main Body
+    print *, 'year=',this%year
+    print *, 'month=',this%month
+    print *, 'day=',this%day
+    print *, 'hour=',this%hour
+    print *, 'minute=',this%minute
+    print *, 'second=',this%second
+End Subroutine
 
 Subroutine rddt_fromString(this, dtmStr, format)
     implicit none
@@ -83,7 +111,9 @@ Subroutine rddt_fromString(this, dtmStr, format)
     character(len=*), intent(in), optional :: format
     ! ................................. Local variables
     character(len=30) :: format_
-    integer(kind=4) :: i, j, k
+    integer(kind=4) :: i, j, k, L
+    character(len=:), allocatable :: Sdigits
+
     ! ................................. Main Body
     ! >>>>>>>>>>>>>>>>>> handle optional arguments
     if (present(format)) then
@@ -134,10 +164,18 @@ Subroutine rddt_fromString(this, dtmStr, format)
     else
         i = 1
         j = 1
-        do while(i .le. len_trim(format)) 
-            if ()
-        end do
+        Sdigits = S3digits(dtmStr)
+        print *, 'Sdigits=',Sdigits
+        L = len(Sdigits)
+        if (L .ge. 4) this%year = s2i4(Sdigits(1:4))
+        if (L .ge. 6) this%month = s2i4(Sdigits(5:6))
+        if (L .ge. 8) this%day = s2i4(Sdigits(7:8))
+        if (L .ge. 10) this%hour = s2i4(Sdigits(9:10))
+        if (L .ge. 12) this%minute = s2i4(Sdigits(11:12))
+        if (L .ge. 14) this%second = s2i4(Sdigits(13:14))
+        deallocate(Sdigits)
     end if
+    call this%checkValid
 End Subroutine rddt_fromString
 
 
@@ -154,7 +192,7 @@ Function rddt_toString(this, format1) result(rst)
     Character(len=:), allocatable :: rst
 
     ! ................................. Main Body
-    ! print *, 'Enter toString'
+    print *, 'Enter toString'
     rstHolder = ''
     ! >>>>>>>>>>>>>>>>>> handle optional arguments
     if (present(format1)) then
@@ -162,16 +200,15 @@ Function rddt_toString(this, format1) result(rst)
         format_ = format1
     else
         format_ = '%Y%m%d'
-        if (this%hour + this%minute + this%second .ne. 0) then
+        if (this%hour + this%minute + this%second .gt. 0) then
             format_ = '%Y%m%d%H%M%S'
         end if
     end if
-
+    print *, 'enter toString, format=', format_
     ! >>>>>>>>>>>>>>>>>> resolve format
     i = 1
     j = 1
     do while(i .le. len_trim(format_))
-        ! print *, 'i=', i
         if (format_(i:i) .eq. '%') then
             i = i + 1
             Select case (format_(i:i))
@@ -190,12 +227,15 @@ Function rddt_toString(this, format1) result(rst)
                 write(rstHolder(j:j+1), '(I0.2)') this%day
                 j = j + 2
             case ('H')  ! hour : 00, 01, ..., 23
+                call assert(this%hour .ge. 0, 'Error! cannot specify %H for a rddt without hour definition!')
                 write(rstHolder(j:j+1), '(I0.2)') this%hour
                 j = j + 2
             case ('M')  ! Minute : 00, 01, ..., 59
+                call assert(this%minute .ge. 0, 'Error! cannot specify %M for a rddt without minute definition!')
                 write(rstHolder(j:j+1), '(I0.2)') this%minute
                 j = j + 2
             case ('S')  ! Second : 00, 01, ..., 59
+                call assert(this%second .ge. 0, 'Error! cannot specify %S for a rddt without second definition!')
                 write(rstHolder(j:j+1), '(I0.2)') this%second
                 j = j + 2
             case default

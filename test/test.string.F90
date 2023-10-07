@@ -12,6 +12,7 @@ Program main
         call test_string1dBuilder
         call test_s2aa2s  ! string to all, all to string
         call test_trim2
+        call test_S3digits
     elseif (arg1 .eq. 'test_argwhere_c1s') then
         call test_argwhere_c1s
     elseif (arg1 .eq. 'test_toString') then
@@ -22,6 +23,8 @@ Program main
         call test_s2aa2s  ! string to all, all to string 
     elseif (arg1 .eq. 'test_trim2') then
         call test_trim2
+    elseif (arg1 .eq. 'test_S3digits') then
+        call test_S3digits
     else
         print *, 'unknwon argument!'
         stop 1
@@ -101,6 +104,12 @@ Subroutine test_trim2()
     call assert(trim2('  aha  ') .eq. 'aha', 'Error in trim2')
     call assert(len_trim2('  aha  ') .eq. 3, 'Error in len_trim2')
 
+End Subroutine
+
+Subroutine test_S3digits
+    implicit none
+    call assert(S3digits('2018/08/01 12:59:41') .eq. '20180801125941', 'Error in s3digits from rdee_string')
+    print *, S3digits('2018/08/01 12:59:41 h xcz d9 9 9')
 End Subroutine
 
 End Program

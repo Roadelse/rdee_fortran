@@ -9,9 +9,11 @@ file(GLOB SRCS *.F90 *.f90 *.F *.f)
 if(${CMAKE_Fortran_COMPILER_ID} STREQUAL "GNU")
     # set_property(SOURCE rdee_um.F90 APPEND_STRING PROPERTY COMPILE_OPTIONS -Wno-conversion)
     set_source_files_properties(rdee_um.F90 PROPERTIES COMPILE_OPTIONS -Wno-conversion)
+    # set_source_files_properties(rdee_string.F90 PROPERTIES COMPILE_OPTIONS -Wno-maybe-uninitialized)
     set_source_files_properties(rdee_time.F90 PROPERTIES COMPILE_OPTIONS -Wno-unused-dummy-argument)  # for use_mpi arg in no-MPI mode
     # set_source_files_properties(rdee_time.F90 PROPERTIES COMPILE_FLAGS "-I/usr/lib/x86_64-linux-gnu/fortran/gfortran-mod-15/openmpi")
 endif()
+
 
 message(STATUS "§ ${Cyan}(/src/)${ColorReset} source files = ${SRCS}")
 add_library(rdee_fortran STATIC ${SRCS})

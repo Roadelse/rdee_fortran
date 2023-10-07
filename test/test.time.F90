@@ -188,10 +188,18 @@ Subroutine test_rdDateTime()
 
     print *, '>>>>>>>>>>> Enter test_rdDateTime <<<<<<<<<<<<<'
     dtm1 = rdDateTime(y=2018, m=1, d=1)
+    print *, 'cp1'
     print *, dtm1%toString()
+    print *, 'cp2'
     call assert(dtm1%toString() .eq. '20180101', 'Error in rdDateTime%toString')
     print *, dtm1%toString('%Y/%m/%d %H')
     call assert(dtm1%toString('%Y/%m/%d %H') .eq. '2018/01/01 00', 'Error in rdDateTime%toString, with format')
+
+    call dtm1%fromString('20231007 1513')
+    call dtm1%print
+    call assert(dtm1%toString('%y/%m/%d %H') .eq. '23/10/07 15', 'Error in rdDateTime%fromString, from rdee_time')
+    call dtm1%fromString('20231007 1513', format='%Y%m%d %H%M')
+    call assert(dtm1%toString('%y/%m/%d %H') .eq. '23/10/07 15', 'Error in rdDateTime%fromString, from rdee_time')
 
 End Subroutine
 

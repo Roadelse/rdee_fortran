@@ -1,18 +1,85 @@
 Module rdee_string
     ! use rdee_ds
+    use rdee_array
     implicit none
 
 Contains
 
 
 ! *********************************************************
-! bsaic functions
+! Series apis for String classifictions
 ! *********************************************************
-Logical Function isDigit(c)
+Logical Function isNumeric(S) result(rst)
     implicit none
-    character(len=1), intent(in) :: c
+    character(len=*), intent(in) :: S
+    integer(kind=4) :: ierr
+    real(kind=4) :: r
 
+    read(S, *, iostat=ierr) r
+    rst = .true.
+    if (ierr .ne. 0) rst = .false.
+End Function isNumeric
+
+
+! *********************************************************
+! Series apis for String extractions
+! *********************************************************
+Function S8idx(S, idx) result(rst)  ! String by index
+    !!! Slice a Character by indexes
+    implicit none
+    character(len=*), intent(in) :: S
+    integer(kind=4) :: idx(:)
+
+    character(len=size(idx)) :: rst
+
+    integer(kind=4) :: i
     
+    ! ................................. main body
+    do i = 1, size(idx)
+        rst(i:i) = S(idx(i):idx(i))
+    end do
+End Function S8idx
+
+Function S3digits(S) result(rst)  ! String extract (3) digits
+    !!! extract only digits from given string <arg:S>
+    implicit none
+    character(len=*), intent(in) :: S
+
+    integer(kind=4), allocatable :: aidxs(:)  ! ascii indexes
+    integer(kind=4), allocatable :: didxs(:)  ! digit indexes
+    character(len=:), allocatable :: rst
+
+    aidxs = ichar(s2ca(S))
+    didxs = ind(aidxs .ge. 48 .and. aidxs .le. 57)
+    rst = S8idx(S, didxs)
+    deallocate(aidxs)
+    deallocate(didxs)
+End Function S3digits
+
+
+Function s2ca(S) result(rst)
+    implicit none
+    character(len=*), intent(in) :: S
+    character(len=1) :: rst(len_trim(S))
+
+    integer(kind=4) :: i
+    do i = 1, len_trim(S)
+        rst(i) = S(i:i)
+    end do
+
+End Function
+
+Function ca2s(ca) result(rst)
+    implicit none
+    character(len=1), intent(in) :: ca(:)
+    character(len=size(ca)):: rst
+
+    integer(kind=4) :: i
+    do i = 1, size(ca)
+        rst(i:i) = ca(i)
+    end do
+
+End Function
 
 
 ! *********************************************************

@@ -1,12 +1,30 @@
 Program main
     use rdee_fortran
     implicit none
+    character(64) :: arg1
 
+    call get_command_argument(1, arg1)
 
-    call test_ispan
-    call test_fspan
-    call test_remove_val
-    call test_union_arr1d
+    if (arg1 .eq. 'ALL' .or. arg1 .eq. 'all' .or. arg1 .eq. '') then
+        call test_ispan
+        call test_fspan
+        call test_remove_val
+        call test_union_arr1d
+        call test_ind
+    elseif (arg1 .eq. 'test_ind') then
+        call test_ind
+    elseif (arg1 .eq. 'test_ispan') then
+        call test_ispan
+    elseif (arg1 .eq. 'test_fspan') then
+        call test_fspan
+    elseif (arg1 .eq. 'test_remove_val') then
+        call test_remove_val
+    elseif (arg1 .eq. 'test_union_arr1d') then
+        call test_union_arr1d
+    else
+        print *, 'unknwon argument!'
+        stop 1
+    end if 
 
 Contains
     Subroutine test_ispan()
@@ -86,6 +104,15 @@ Contains
         print *, iaa1
         call assert(all(iaa1 .eq. [1,2,3,4,5,6,7]), 'Error in rdee.array.union_arr1d for int4')
         deallocate(iaa1)
+    End Subroutine
+
+    Subroutine test_ind()
+        implicit none
+        logical :: la(4)
+        print *, (/1,2,3,4/) .ge. 3
+        la = (/1,2,3,4/) .ge. 3
+        call assert(all(ind(((/1,2,3,4/) .ge. 3)) .eq. [3,4]), 'Error in ind from test.array!')
+
     End Subroutine
 
 End Program
